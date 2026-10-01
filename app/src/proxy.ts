@@ -29,9 +29,13 @@ const SESSION_TTL = 60 * 60 * 24 * 7;
 // `api/admin/run-job` được loại trừ vì scheduler ngoài (Coolify Scheduled Task)
 // gọi bằng bearer CRON_TRIGGER_TOKEN, không có session cookie. Route tự xác
 // thực (token HOẶC session admin) nên không mất bảo mật.
+//
+// `api/mcp` được loại trừ vì MCP client (Claude Code/Desktop, Zapier, n8n) gọi
+// bằng bearer MCP_BEARER_TOKENS_JSON, không có session cookie. Route bọc
+// withMcpAuth (required: true) → thiếu/sai token trả 401.
 export const config = {
   matcher: [
-    '/((?!api/auth|api/skills/upload|api/news/ingest-ads|api/news/ingest-web|api/admin/run-job|api/admin/tiktok-debug|api/telegram/webhook|api/analytics/overview|_next|favicon.ico|public|login).*)',
+    '/((?!api/auth|api/skills/upload|api/news/ingest-ads|api/news/ingest-web|api/admin/run-job|api/admin/tiktok-debug|api/telegram/webhook|api/analytics/overview|api/mcp|_next|favicon.ico|public|login).*)',
   ],
 };
 

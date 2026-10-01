@@ -139,11 +139,13 @@ MCP_BEARER_TOKENS_JSON='{"tok_prod_zapier_7f3d8b2e":{"clientId":"zapier","scopes
 # Unauth → 401
 curl -X POST http://localhost:3000/api/mcp \
   -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
 
 # Authed → 200 + tools
 curl -X POST http://localhost:3000/api/mcp \
   -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
   -H 'Authorization: Bearer tok_prod_zapier_7f3d8b2e' \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
 ```
@@ -158,6 +160,31 @@ curl -X POST http://localhost:3000/api/mcp \
 - **Body**: MCP JSON-RPC payload (xem MCP spec)
 
 n8n có node MCP chính thức — paste URL + token là dùng được.
+
+### 5. Claude Code / Claude Desktop → prod qua HTTP
+
+Không cần DB local — Claude gọi thẳng `https://<domain>/api/mcp` bằng Bearer token.
+Prod (Coolify): token đặt ở env `MCP_BEARER_TOKENS_JSON` của app, sửa xong phải redeploy.
+
+```bash
+# Claude Code
+claude mcp add --transport http marketing-os https://<domain>/api/mcp \
+  --header "Authorization: Bearer <token>"
+```
+
+Claude Desktop (`claude_desktop_config.json`) — qua bridge `mcp-remote`:
+
+```json
+{
+  "mcpServers": {
+    "marketing-os": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://<domain>/api/mcp", "--header", "Authorization:${MCP_AUTH}"],
+      "env": { "MCP_AUTH": "Bearer <token>" }
+    }
+  }
+}
+```
 
 ---
 

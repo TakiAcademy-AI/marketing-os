@@ -1,5 +1,5 @@
 // MCP server factory — shared core dùng cho cả stdio (scripts/mcp-stdio.ts)
-// và HTTP transport (app/api/mcp/[transport]/route.ts).
+// và HTTP transport (app/api/mcp/route.ts).
 //
 // Triết lý: createServer() chỉ làm 1 việc — tạo McpServer + register tools.
 // Mọi SQL ở src/lib/queries/*. Mọi PII redact ở src/mcp/redact.ts.
