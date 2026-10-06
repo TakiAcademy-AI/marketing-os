@@ -62,7 +62,23 @@ export function fbThrottle(): Promise<void> {
  *
  * NO whitespace inside the value — Graph API is picky.
  */
-const POSTS_FIELDS_FULL = [
+/** Post-level insights metric ta yêu cầu. FB xoá metric theo từng đợt version:
+ *  post_media_view, post_total_media_view_unique, post_clicks_by_type,
+ *  post_reactions_by_type_total đã chết ở v25.
+ *
+ *  BÀI HỌC: Graph API trả (#100) cho CẢ CỤM insights.metric(...) khi chỉ cần
+ *  MỘT metric trong cụm không còn tồn tại. Hardcode cả cụm nghĩa là mỗi lần FB
+ *  khai tử thêm 1 metric thì mất sạch insights. Vì vậy danh sách này được
+ *  `resolveInsightMetrics()` dò lúc chạy và loại bỏ metric đã chết, thay vì tin
+ *  là cả cụm còn sống. */
+const POST_INSIGHT_METRICS = [
+  'post_clicks', // → clicks
+  'post_impressions_unique', // → reach (unique viewers)
+  'post_video_views', // → video_views
+] as const;
+
+/** Các field luôn lấy được, không phụ thuộc scope hay metric. */
+const POSTS_FIELDS_BASE = [
   'id',
   'message',
   'story',
@@ -70,50 +86,39 @@ const POSTS_FIELDS_FULL = [
   'permalink_url',
   'full_picture',
   'attachments{media_type,type,title,description,media,subattachments}',
+  'shares',
+] as const;
+
+/** Field cần scope `pages_read_user_content`. Đây là nguồn engagement
+ *  (reactions + comments) → nuôi engagement_rate trong health score. */
+const POSTS_FIELDS_USER_CONTENT = [
   'comments.summary(true){id,message,created_time,from}',
-  'shares',
   'reactions.summary(true)',
-  // Insights metric — modern only (FB Graph API v25+).
-  // Deprecated metrics (post_media_view, post_total_media_view_unique,
-  // post_clicks_by_type, post_reactions_by_type_total) đã bị FB xóa khỏi
-  // v25 → gây error #100 → toàn bộ insights request fail → fallback
-  // xuống MINIMAL tier → tất cả metrics = 0. Chỉ dùng modern:
-  //   post_clicks          → clicks
-  //   post_impressions_unique → reach (unique viewers)
-  //   post_video_views     → video_views
-  // reactions + comments lấy từ reactions.summary(true) và comments.summary(true)
-  // ở trên (cần pages_read_user_content scope).
-  'insights.metric(post_clicks,post_impressions_unique,post_video_views)',
-].join(',');
+] as const;
 
-/** Mid-tier: keeps insights + shares, drops user-content (comments/reactions).
- *  Used when token only has pages_read_engagement (no user_content). */
-const POSTS_FIELDS_NO_USER_CONTENT = [
-  'id',
-  'message',
-  'story',
-  'created_time',
-  'permalink_url',
-  'full_picture',
-  'attachments{media_type,type,title,description,media,subattachments}',
-  'shares',
-  // Modern metrics only — same rationale as FULL tier above.
-  'insights.metric(post_clicks,post_impressions_unique,post_video_views)',
-].join(',');
-
-/** Bottom tier: drops insights too. Used when even NO_USER_CONTENT
- *  fails (e.g. #100 dead metric). Lose reach/impressions but still
- *  get post metadata so the rest of the pipeline keeps working. */
-const POSTS_FIELDS_MINIMAL = [
-  'id',
-  'message',
-  'story',
-  'created_time',
-  'permalink_url',
-  'full_picture',
-  'attachments{media_type,type,title,description,media,subattachments}',
-  'shares',
-].join(',');
+/**
+ * Dựng chuỗi `fields` từ 2 trục ĐỘC LẬP.
+ *
+ * Trước đây 3 tier là một bậc thang cứng, và tier FULL/NO_USER_CONTENT dùng
+ * CHUNG một chuỗi insights — nên khi insights chết, tier 2 chắc chắn chết theo
+ * cùng lý do rồi tụt thẳng xuống MINIMAL, kéo mất luôn comments/reactions dù
+ * chúng hoàn toàn khoẻ. Hậu quả: engagement_rate = 0 trên mọi kênh.
+ *
+ * Tách 2 trục để một trục hỏng không làm mất dữ liệu của trục kia.
+ *
+ * NO whitespace inside the value — Graph API is picky.
+ */
+function buildPostsFields(opts: {
+  userContent: boolean;
+  insightMetrics: readonly string[];
+}): string {
+  const parts: string[] = [...POSTS_FIELDS_BASE];
+  if (opts.userContent) parts.push(...POSTS_FIELDS_USER_CONTENT);
+  if (opts.insightMetrics.length) {
+    parts.push(`insights.metric(${opts.insightMetrics.join(',')})`);
+  }
+  return parts.join(',');
+}
 
 /** Sleep helper for backoff delays. */
 function sleep(ms: number): Promise<void> {
@@ -309,6 +314,91 @@ async function fetchAllPaginated<T>(
   return all;
 }
 
+/** Loại lỗi field của Graph API, quyết định strip trục nào.
+ *
+ *  - `metric`: metric insights không tồn tại. FB dùng (#100) cho việc này.
+ *  - `scope` : (#10) trên comments/reactions. Message của FB GÂY NHẦM — nó nói
+ *              "requires pages_read_engagement" nhưng scope thiếu thật sự là
+ *              `pages_read_user_content`. Đừng tin chữ trong message.
+ *  - `other` : không sửa được bằng cách bỏ field → ném lên cho caller. */
+function classifyFieldError(msg: string): 'metric' | 'scope' | 'other' {
+  const is100 = msg.includes('(#100)') || msg.includes('(code 100)');
+  const is10 = msg.includes('(#10)') || msg.includes('(code 10)');
+  if (is100 && /insights metric|valid insights/i.test(msg)) return 'metric';
+  if (is10) return 'scope';
+  // (#100) chung chung: trong field spec này thủ phạm khả dĩ nhất vẫn là
+  // insights (giữ nguyên hành vi cũ — #100 coi là lỗi strip được).
+  if (is100) return 'metric';
+  return 'other';
+}
+
+/** Metric đã được xác nhận CHẾT ở version API hiện tại. null = chưa dò.
+ *  Cache ở mức process: metric sống/chết là thuộc tính của Graph API version,
+ *  giống nhau cho mọi page/token → dò 1 lần cho cả run của cron job. */
+let deadInsightMetrics: Set<string> | null = null;
+
+/**
+ * Dò từng metric riêng lẻ để biết metric nào FB đã khai tử, rồi cache lại.
+ *
+ * Vì sao phải dò từng cái: Graph API chỉ trả (#100) cho cả cụm mà KHÔNG nói
+ * metric nào sai. Không có cách nào suy ra ngoài việc thử lẻ.
+ *
+ * Chi phí: `limit=1` nên mỗi probe là 1 call, và `fetchAllPaginated` chỉ throttle
+ * GIỮA các trang → probe không ăn delay 25-45s. Tổng 3 call, 1 lần/process.
+ *
+ * Thận trọng khi kết luận — chỉ cache khi chắc chắn:
+ *  - page không có bài nào → FB chẳng phải tính insights → probe "pass" giả.
+ *    Bỏ qua, không cache.
+ *  - lỗi scope/transient → không phải metric chết. Bỏ qua, không cache.
+ *  - TokenExpiredError → ném lên ngay để `markAccountTokenExpired()` chạy.
+ */
+async function resolveInsightMetrics(
+  token: string,
+  pageId: string
+): Promise<readonly string[]> {
+  if (deadInsightMetrics) {
+    return POST_INSIGHT_METRICS.filter((m) => !deadInsightMetrics!.has(m));
+  }
+
+  const dead = new Set<string>();
+  for (const metric of POST_INSIGHT_METRICS) {
+    try {
+      const res = await fb<FBPaginatedResponse<unknown>>(
+        `/${pageId}/posts`,
+        { limit: '1', fields: `insights.metric(${metric})` },
+        token
+      );
+      // Không có bài → metric chưa bị đánh giá → không kết luận được gì.
+      if (!res.data?.length) {
+        console.warn(
+          `[fbInsightMetrics] page ${pageId} không có bài để dò "${metric}" — bỏ dò, chưa cache.`
+        );
+        return [...POST_INSIGHT_METRICS];
+      }
+    } catch (err) {
+      if (err instanceof TokenExpiredError) throw err;
+      const msg = (err as Error).message;
+      if (classifyFieldError(msg) === 'metric') {
+        dead.add(metric);
+        continue;
+      }
+      console.warn(
+        `[fbInsightMetrics] probe "${metric}" không kết luận được ` +
+          `(${msg.slice(0, 110)}) — bỏ dò, chưa cache.`
+      );
+      return [...POST_INSIGHT_METRICS];
+    }
+  }
+
+  deadInsightMetrics = dead;
+  const alive = POST_INSIGHT_METRICS.filter((m) => !dead.has(m));
+  console.log(
+    `[fbInsightMetrics] dò xong trên ${pageId} — còn sống: [${alive.join(', ') || 'không còn'}]` +
+      ` | đã chết: [${[...dead].join(', ') || 'không có'}]`
+  );
+  return alive;
+}
+
 /**
  * Fetch recent posts for a page with full field expansion.
  * Auto-paginates via cursor; capped at MAX_PAGES × 100 posts.
@@ -333,55 +423,63 @@ export async function fetchPagePosts(
     limit: '25',
   };
 
-  // Helper: tell which FB error codes are recoverable via field-stripping.
-  // (#10)  = permission issue on user-content (comments/reactions). Misleading
-  //         message — FB says "requires pages_read_engagement" but the actual
-  //         missing scope is pages_read_user_content.
-  // (#100) = invalid metric (FB deprecated a metric name we still request).
-  const isRecoverableFieldError = (msg: string): boolean =>
-    msg.includes('(code 10)') ||
-    msg.includes('(#10)') ||
-    msg.includes('(code 100)') ||
-    msg.includes('(#100)');
+  // Metric đã chết được loại ra TRƯỚC khi gọi, nên trục insights thường không
+  // còn phải fallback nữa.
+  let insightMetrics: readonly string[] = await resolveInsightMetrics(token, pageId);
+  let userContent = true;
 
-  // Tier 1 — full expansion (insights + comments + reactions + shares)
-  try {
-    return await fetchAllPaginated<FBPagePost>(
-      `/${pageId}/posts`,
-      { ...baseParams, fields: POSTS_FIELDS_FULL },
-      token
-    );
-  } catch (err) {
-    const msg = (err as Error).message;
-    if (!isRecoverableFieldError(msg)) throw err;
-    console.warn(
-      `[fetchPagePosts] FULL expansion failed (${msg.slice(0, 120)}) — ` +
-        `falling back to NO_USER_CONTENT (drops comments+reactions, keeps insights). ` +
-        `Likely cause: token missing pages_read_user_content scope.`
-    );
+  // Mỗi vòng strip đúng 1 trục theo loại lỗi FB báo, nên không đốt call vào
+  // những tổ hợp chắc chắn sai. Tối đa 3 vòng: metric → user-content → hết đường.
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      return await fetchAllPaginated<FBPagePost>(
+        `/${pageId}/posts`,
+        { ...baseParams, fields: buildPostsFields({ userContent, insightMetrics }) },
+        token
+      );
+    } catch (err) {
+      if (err instanceof TokenExpiredError) throw err;
+      const msg = (err as Error).message;
+      const kind = classifyFieldError(msg);
+      if (kind === 'other') throw err;
+
+      // Ưu tiên bỏ insights trước: engagement (comments/reactions) có giá trị
+      // hơn reach/clicks cho health score, và insights là thứ hay chết.
+      if (kind === 'metric' && insightMetrics.length > 0) {
+        console.warn(
+          `[fetchPagePosts] ${pageId}: insights lỗi (${msg.slice(0, 110)}) — ` +
+            `bỏ insights, GIỮ comments+reactions.`
+        );
+        insightMetrics = [];
+        continue;
+      }
+      if (kind === 'scope' && userContent) {
+        console.warn(
+          `[fetchPagePosts] ${pageId}: thiếu scope pages_read_user_content ` +
+            `(${msg.slice(0, 110)}) — bỏ comments+reactions, GIỮ insights.`
+        );
+        userContent = false;
+        continue;
+      }
+      // Lỗi còn lại không khớp trục nào chưa strip → strip trục còn lại.
+      if (userContent) {
+        console.warn(`[fetchPagePosts] ${pageId}: bỏ thêm comments+reactions.`);
+        userContent = false;
+        continue;
+      }
+      if (insightMetrics.length > 0) {
+        console.warn(`[fetchPagePosts] ${pageId}: bỏ thêm insights.`);
+        insightMetrics = [];
+        continue;
+      }
+      throw err; // đã trần trụi mà vẫn lỗi → để caller xử lý
+    }
   }
 
-  // Tier 2 — keep insights + shares, drop comments/reactions
-  try {
-    return await fetchAllPaginated<FBPagePost>(
-      `/${pageId}/posts`,
-      { ...baseParams, fields: POSTS_FIELDS_NO_USER_CONTENT },
-      token
-    );
-  } catch (err) {
-    const msg = (err as Error).message;
-    if (!isRecoverableFieldError(msg)) throw err;
-    console.warn(
-      `[fetchPagePosts] NO_USER_CONTENT expansion failed (${msg.slice(0, 120)}) — ` +
-        `falling back to MINIMAL (metadata only, no insights, no engagement). ` +
-        `Likely cause: deprecated insights metric or token missing pages_read_engagement.`
-    );
-  }
-
-  // Tier 3 — last resort: metadata only. If this fails, propagate.
+  // Đã strip hết 2 trục — lấy metadata trơn. Lỗi ở đây thì propagate.
   return await fetchAllPaginated<FBPagePost>(
     `/${pageId}/posts`,
-    { ...baseParams, fields: POSTS_FIELDS_MINIMAL },
+    { ...baseParams, fields: buildPostsFields({ userContent: false, insightMetrics: [] }) },
     token
   );
 }
