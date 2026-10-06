@@ -5,7 +5,7 @@
 // Reach = 50% (chiếm trọng số chính), 50% còn lại giữ tỷ lệ cũ 4:3:2 cho ER/Consistency/Growth.
 //
 // Benchmarks dựa trên industry FB Page lớn (2024-2025):
-//   - ER trung bình: 0.5-3% → benchmark 3%
+//   - ER: xem ghi chú hiệu chỉnh ở erScore() — mẫu số đã đổi từ migration 065
 //   - Reach rate trung bình: 10-30%/ngày → target 30%
 //   - Growth: ±5%/tuần là biên độ thực tế cho page healthy
 
@@ -16,16 +16,31 @@ function clamp(value: number, min: number, max: number): number {
 
 /**
  * ER score from last-30d average engagement_rate.
- * Industry benchmark cho FB Page lớn: 0.5-3% → dùng 3% làm "perfect score" mặc định.
+ *
+ * HIỆU CHỈNH BENCHMARK (migration 065):
+ * Mốc 3% cũ được đặt cho ER tính theo REACH ("ER trung bình 0.5-3%"). Từ
+ * migration 065, mẫu số của `post_metric_daily.engagement_rate` là FOLLOWERS,
+ * vì FB đã khai tử post_impressions_unique nên reach = 0.
+ *
+ * ER theo follower thấp hơn ER theo reach khoảng một bậc độ lớn (reach luôn nhỏ
+ * hơn nhiều so với tổng follower). Giữ nguyên mốc 3% thì gần như mọi kênh sẽ ra
+ * er_score ≈ 0 — tức là đổi mẫu số xong chỉ số vẫn vô dụng, chỉ là vô dụng theo
+ * kiểu khác.
+ *
+ * 1% là mốc KHỞI ĐIỂM, chưa phải mốc đã hiệu chuẩn theo dữ liệu thật: lúc đặt
+ * giá trị này, ER trên production còn đang = 0 nên không có phân phối nào để
+ * soi. Sau một lượt job-health-recompute, suy ngược avgER từ log
+ * (`avgER = er_score × benchmark / 100`) rồi chỉnh lại con số này cho khớp thực tế.
  *
  * Formula: clamp((avgER / benchmark) * 100, 0, 100)
+ * Clamp chặn cả trường hợp bài viral trên page ít follower (ER có thể > 1).
  *
- * @param avgEngagementRate - Trung bình ER 30d, dạng decimal 0..1 (vd 0.025 = 2.5%)
+ * @param avgEngagementRate - Trung bình ER 30d, dạng decimal (vd 0.005 = 0.5% follower)
  *                            Lấy từ DB GENERATED column `post_metric_daily.engagement_rate`
- * @param benchmark - ER target đạt 100đ, default 0.03 (3%)
+ * @param benchmark - ER target đạt 100đ, default 0.01 (1% follower)
  * @returns score 0-100
  */
-export function erScore(avgEngagementRate: number, benchmark = 0.03): number {
+export function erScore(avgEngagementRate: number, benchmark = 0.01): number {
   if (benchmark <= 0) return 0;
   return clamp((avgEngagementRate / benchmark) * 100, 0, 100);
 }

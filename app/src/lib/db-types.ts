@@ -105,7 +105,11 @@ export interface PostMetricDaily {
   impressions: number;
   clicks: number;
   video_views: number;
-  /** GENERATED ALWAYS AS STORED — read-only, never write */
+  /** Follower của kênh tại ngày này — mẫu số của engagement_rate (migration 065).
+   *  0 = chưa biết; trigger trg_fill_post_metric_followers tự điền, không ghi tay. */
+  followers_snapshot: number;
+  /** GENERATED ALWAYS AS STORED — read-only, never write.
+   *  Từ migration 065: (reactions+comments+shares) / followers_snapshot. */
   engagement_rate: number;
   updated_at: Date;
 }
