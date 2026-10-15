@@ -14,7 +14,8 @@
 // đã từng có page bị Facebook trả về trang đăng nhập. Dưới 5 page nên chậm không sao.
 
 import { db } from '@/lib/db';
-import { fetchFbPagePosts, normalizePageRef } from '@/lib/news/fb-cli';
+import { fetchFbPagePosts, importFbSession, normalizePageRef } from '@/lib/news/fb-cli';
+import { getSettingOrEnv } from '@/lib/settings/api-keys';
 import { mapScrapedPost } from '@/lib/fb-scrape/map-scraped-post';
 import { startSyncLog, finishSyncLog } from '@/lib/cron/sync-log';
 import {
@@ -95,6 +96,33 @@ export async function runFbScrapeJob(): Promise<void> {
 
   console.log(`[job-fb-scrape] Processing ${accounts.length} scrape-only page(s)`);
   if (accounts.length === 0) return;
+
+  // Nạp session TRƯỚC khi đọc feed. Không có bước này thì job chỉ chạy được khi
+  // job-apify-news tình cờ đã import vào cùng FB_DATA_DIR trước đó — một phụ
+  // thuộc chéo ngầm giữa hai job, hỏng lúc nào không biết.
+  // Idempotent, giống hệt cách job-apify-news làm.
+  //
+  // Không có session thì fb-cli rơi xuống tier 0, thực tế chỉ trả 1 bài/page →
+  // báo cáo vô nghĩa. Nêu rõ trong log thay vì để ra số liệu thiếu mà im lặng.
+  const [cUser, xs] = await Promise.all([
+    getSettingOrEnv('FB_SESSION_C_USER'),
+    getSettingOrEnv('FB_SESSION_XS'),
+  ]);
+  if (!cUser || !xs) {
+    console.warn(
+      '[job-fb-scrape] Chưa cấu hình session Facebook (FB_SESSION_C_USER + FB_SESSION_XS ' +
+        'ở Settings → Tích hợp API). fb-cli sẽ chạy tier 0 và chỉ trả ~1 bài/page.'
+    );
+  } else {
+    try {
+      await importFbSession(cUser, xs);
+    } catch (err) {
+      console.warn(
+        `[job-fb-scrape] fb auth import lỗi — vẫn thử đọc feed: ` +
+          `${err instanceof Error ? err.message : err}`
+      );
+    }
+  }
 
   let totalRecords = 0;
 
