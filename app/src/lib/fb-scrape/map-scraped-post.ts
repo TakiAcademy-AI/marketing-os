@@ -34,10 +34,17 @@ function toStr(v: unknown): string | null {
 }
 
 /**
- * Suy ra post_type từ attachments. Feed trả attachments[].media.kind.
+ * Suy ra post_type từ URL + attachments. Feed trả attachments[].media.kind.
  * Mặc định 'status' (khớp DEFAULT của cột) khi không có attachment nào.
+ *
+ * URL xét TRƯỚC: reel và video thường đều là media kind 'video', chỉ phân biệt
+ * được qua đường dẫn /reel/. Giống hệt cách inferPostType() làm ở đường token
+ * (lib/fb/parse-post.ts) — hai đường phải gán cùng một post_type, nếu không
+ * các query lọc `post_type IN ('reel','video')` (team-kpi-sql, library) sẽ đếm
+ * lệch giữa kênh quét và kênh có token.
  */
-function derivePostType(attachments: unknown): string {
+function derivePostType(attachments: unknown, url: string | null): string {
+  if (url?.includes('/reel/')) return 'reel';
   if (!Array.isArray(attachments) || attachments.length === 0) return 'status';
   const kinds = new Set<string>();
   for (const att of attachments) {
@@ -71,6 +78,8 @@ export function mapScrapedPost(raw: Record<string, unknown>): ScrapedPost | null
   const externalId = toStr(rec.id);
   if (!externalId) return null;
 
+  const permalink = toStr(rec.url);
+
   const createdAt = toStr(rec.created_at);
   if (!createdAt) return null;
   const publishedAt = new Date(createdAt);
@@ -85,9 +94,9 @@ export function mapScrapedPost(raw: Record<string, unknown>): ScrapedPost | null
       // Feed chỉ ship photo id, không ship URL — resolve URL cần thêm 1 call
       // fb-cli mỗi ảnh, không đáng cho báo cáo số liệu.
       media_url: null,
-      post_type: derivePostType(rec.attachments),
+      post_type: derivePostType(rec.attachments, permalink),
       published_at: publishedAt,
-      permalink: toStr(rec.url),
+      permalink,
     },
     metric: {
       date: publishedAt,
