@@ -11,6 +11,7 @@ import { z } from 'zod';
 import { db } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth/get-session';
 import { getUserRole } from '@/lib/auth/get-role';
+import { normalizePageRef } from '@/lib/news/fb-cli';
 
 export const runtime = 'nodejs';
 
@@ -22,6 +23,10 @@ const schema = z.object({
     'facebook', 'tiktok', 'youtube', 'instagram', 'threads',
     'linkedin', 'pinterest', 'reddit', 'mastodon', 'bluesky', 'twitter', 'zalo',
   ]),
+  // Slug/ID/URL của Facebook Page để quét công khai bằng fb-cli (migration 066).
+  // Dùng cho page đã mất quyền quản trị: không có token nên không lấy được
+  // Page Insights, nhưng bài + reactions/comments/shares thì công khai.
+  fbScrapeHandle: z.string().trim().min(1).max(255).optional(),
 });
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
@@ -45,17 +50,26 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     );
   }
 
-  const { name, platform } = parsed.data;
+  const { name, platform, fbScrapeHandle } = parsed.data;
+  // Chuẩn hoá về ref mà fb-cli hiểu: nhận cả slug, URL đầy đủ, profile.php?id=N.
+  const scrapeHandle = fbScrapeHandle ? normalizePageRef(fbScrapeHandle) : null;
+  if (fbScrapeHandle && platform !== 'facebook') {
+    return NextResponse.json(
+      { error: 'Chỉ kênh Facebook mới quét được bằng fb-cli' },
+      { status: 400 }
+    );
+  }
   // external_id giả lập, đảm bảo unique theo (platform, external_id).
   const externalId = `manual:${randomBytes(8).toString('hex')}`;
 
   try {
     const { rows } = await db.query<{ id: string }>(
       `INSERT INTO social_account
-         (platform, external_id, name, status, owner_member_id, kpi_posts_per_day, is_manual)
-       VALUES ($1, $2, $3, 'active', $4, 1, true)
+         (platform, external_id, name, status, owner_member_id, kpi_posts_per_day,
+          is_manual, fb_scrape_handle)
+       VALUES ($1, $2, $3, 'active', $4, 1, true, $5)
        RETURNING id`,
-      [platform, externalId, name, user.userId]
+      [platform, externalId, name, user.userId, scrapeHandle]
     );
     const accountId = rows[0]?.id;
     if (!accountId) throw new Error('insert returned no id');

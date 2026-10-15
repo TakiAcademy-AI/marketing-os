@@ -23,6 +23,7 @@ export function ManualChannelForm() {
   const router = useRouter();
   const [name, setName] = useState('');
   const [platform, setPlatform] = useState('facebook');
+  const [scrapeHandle, setScrapeHandle] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,7 +40,12 @@ export function ManualChannelForm() {
       const res = await fetch('/api/channels/manual', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name.trim(), platform }),
+        body: JSON.stringify({
+          name: name.trim(),
+          platform,
+          // Bỏ hẳn field nếu để trống — schema server coi là optional.
+          ...(scrapeHandle.trim() ? { fbScrapeHandle: scrapeHandle.trim() } : {}),
+        }),
       });
       const data = (await res.json().catch(() => ({}))) as { accountId?: string; error?: string };
       if (!res.ok || !data.accountId) {
@@ -89,6 +95,30 @@ export function ManualChannelForm() {
           ))}
         </select>
       </div>
+
+      {platform === 'facebook' && (
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="m-scrape" className="text-xs font-medium text-zinc-700">
+            Page Facebook để quét công khai{' '}
+            <span className="font-normal text-zinc-400">(không bắt buộc)</span>
+          </label>
+          <input
+            id="m-scrape"
+            type="text"
+            value={scrapeHandle}
+            onChange={(e) => setScrapeHandle(e.target.value)}
+            placeholder="VD: takiacademy hoặc facebook.com/takiacademy"
+            disabled={loading}
+            className="h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 focus:border-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900/10 disabled:opacity-50"
+          />
+          <p className="text-[11px] text-zinc-500">
+            Dành cho page bạn đã <strong>mất quyền quản trị</strong>. Hệ thống sẽ tự
+            quét bài + lượt tương tác/bình luận/chia sẻ mỗi ngày.{' '}
+            <strong>Reach, impressions và tin nhắn thì không lấy được</strong> — đó là
+            dữ liệu riêng tư của Page, Facebook không cho đọc khi không có quyền.
+          </p>
+        </div>
+      )}
 
       <p className="text-[11px] text-zinc-500">
         Kênh thủ công không tự đồng bộ. Sau khi tạo, bạn nhập followers / reach /

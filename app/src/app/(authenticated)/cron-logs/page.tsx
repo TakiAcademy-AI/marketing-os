@@ -31,6 +31,7 @@ const JOB_LABEL: Record<SyncTypeT, string> = {
   news_ingestion: 'News ingestion',
   message_sync: 'Tin nhắn (inbox)',
   ga4_sync: 'GA4 Sessions sync',
+  fb_scrape: 'Quét page công khai (fb-cli)',
 };
 
 const JOB_SCHEDULE: Record<SyncTypeT, string> = {
@@ -41,7 +42,7 @@ const JOB_SCHEDULE: Record<SyncTypeT, string> = {
   ladipage: '23:30 Asia/Ho_Chi_Minh daily',
   news_ingestion: 'Hourly (phút :15)',
   message_sync: 'Mỗi 2 giờ (UTC)',
-  ga4_sync: '00:30 Asia/Ho_Chi_Minh daily',
+  ga4_sync: '00:30 Asia/Ho_Chi_Minh daily',  fb_scrape: '01:00 UTC daily',
 };
 
 const VALID_STATUS = new Set<SyncStatusT>(['success', 'failed', 'running']);

@@ -115,15 +115,43 @@ export interface HealthInputScores {
   consistency: number;
   growth: number;
   reach: number;
+  /**
+   * false khi kênh KHÔNG CÓ dữ liệu reach, chứ không phải reach bằng 0.
+   * Hai thứ này khác nhau và phải chấm khác nhau — xem computeHealthScore().
+   * Mặc định true để giữ nguyên hành vi cũ cho mọi caller sẵn có.
+   */
+  hasReachData?: boolean;
 }
 
 /**
- * Compute final health score from 4 sub-scores (each 0-100).
+ * Compute final health score from the sub-scores (each 0-100).
  * Weights: (2/9) ER + (1/6) consistency + (1/9) growth + 0.5 reach.
  * Reach dominant (50%), 50% còn lại giữ tỷ lệ 4:3:2 cho ER/Consistency/Growth.
- * Result rounded to 2 decimal places.
+ *
+ * KHI KHÔNG CÓ DỮ LIỆU REACH (hasReachData = false):
+ * Reach chiếm 50% trọng số, nên nhét reach = 0 vào sẽ chặt đôi điểm của kênh —
+ * kênh hiện ra như đang yếu trong khi thực chất chỉ là thiếu số liệu. Sai lệch
+ * này đủ lớn để làm lệch cả bảng xếp hạng kênh.
+ *
+ * Hai nhóm kênh rơi vào trường hợp này:
+ *  - kênh quét công khai bằng fb-cli (migration 066): reach là Page Insights,
+ *    dữ liệu riêng tư, không bao giờ lấy được mà không có quyền quản trị
+ *  - kênh mà page_insights chưa/không trả được số (vd token thiếu read_insights)
+ *
+ * Nên khi không có dữ liệu, bỏ reach khỏi công thức và chuẩn hoá lại 3 trọng số
+ * còn lại cho tổng = 1 (nhân 2, vì chúng đang cộng lại bằng 0.5):
+ *   (4/9) ER + (1/3) consistency + (2/9) growth
+ * Điểm lúc này chỉ nói về phần đo được, không trừng phạt phần không đo được.
  */
-export function computeHealthScore({ er, consistency, growth, reach }: HealthInputScores): number {
-  const raw = (2 / 9) * er + (1 / 6) * consistency + (1 / 9) * growth + 0.5 * reach;
+export function computeHealthScore({
+  er,
+  consistency,
+  growth,
+  reach,
+  hasReachData = true,
+}: HealthInputScores): number {
+  const raw = hasReachData
+    ? (2 / 9) * er + (1 / 6) * consistency + (1 / 9) * growth + 0.5 * reach
+    : (4 / 9) * er + (1 / 3) * consistency + (2 / 9) * growth;
   return Math.round(raw * 100) / 100;
 }

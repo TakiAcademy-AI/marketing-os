@@ -34,6 +34,7 @@ const JOB_LABEL: Record<SyncTypeT, string> = {
   news_ingestion: 'News ingestion',
   message_sync: 'Tin nhắn (inbox)',
   ga4_sync: 'GA4 Sessions sync',
+  fb_scrape: 'Quét page công khai (fb-cli)',
 };
 
 function formatTime(iso: string | null): string {

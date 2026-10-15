@@ -13,6 +13,7 @@ import { runBundleImportPollerJob } from '@/lib/cron/job-bundle-import-poller';
 import { runBundleConnectPollerJob } from '@/lib/cron/job-bundle-connect-poller';
 import { runAdsIngestionJob } from '@/lib/cron/job-ads-ingestion';
 import { runMessageSyncJob } from '@/lib/cron/job-message-sync';
+import { runFbScrapeJob } from '@/lib/cron/job-fb-scrape';
 import { runApifyNewsJob } from '@/lib/cron/job-apify-news';
 import { runGa4SyncJob } from '@/lib/cron/job-ga4-sync';
 import { runTelegramReportJob } from '@/lib/cron/job-telegram-report';
@@ -50,6 +51,16 @@ export function initCrons(): void {
   cron.schedule('30 2,10,18 * * *', () => {
     runPostsIngestionJob().catch((err) =>
       console.error('[cron] job-posts-ingestion uncaught error:', err)
+    );
+  });
+
+  // Job B2: quét bài công khai bằng fb-cli cho page mất quyền quản trị.
+  // 1×/ngày lúc 01:00 UTC — TRƯỚC health recompute (03:00) để điểm sức khoẻ
+  // tính trên dữ liệu vừa quét, và trước posts ingestion để không chen vào
+  // cùng lúc. Chỉ chạy nếu có kênh gắn fb_scrape_handle.
+  cron.schedule('0 1 * * *', () => {
+    runFbScrapeJob().catch((err) =>
+      console.error('[cron] job-fb-scrape uncaught error:', err)
     );
   });
 

@@ -140,7 +140,16 @@ export async function runHealthRecomputeForAccount(accountId: string): Promise<v
   // reachScore giờ là rate-based (reach / followers) → cần truyền followersToday
   const reach = reachScore(avgReach, followersToday);
 
-  const health = computeHealthScore({ er, consistency, growth, reach });
+  // "Không có dữ liệu reach" KHÁC "reach = 0", và reach chiếm 50% trọng số nên
+  // nhầm hai thứ này sẽ chặt đôi điểm của kênh một cách giả tạo.
+  // Không có dữ liệu = không ngày nào trong 30d ghi được total_reach > 0:
+  //  - kênh quét fb-cli (migration 066) — reach là Page Insights, không bao giờ có
+  //  - kênh token thiếu scope read_insights nên page_insights trả rỗng
+  // Cũng cần followers > 0, vì reachScore trả 0 khi không có mẫu số để tính rate.
+  const hasReachData =
+    followersToday > 0 && accountMetrics.some((r) => r.total_reach > 0);
+
+  const health = computeHealthScore({ er, consistency, growth, reach, hasReachData });
 
   await upsertHealthRow(accountId, {
     health_score: health,

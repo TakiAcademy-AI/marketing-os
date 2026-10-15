@@ -40,7 +40,9 @@ export type SyncTypeT =
   | 'ladipage'
   | 'news_ingestion'
   | 'message_sync'
-  | 'ga4_sync';
+  | 'ga4_sync'
+  /** Quét bài công khai bằng fb-cli cho page mất quyền quản trị (migration 066). */
+  | 'fb_scrape';
 
 export type SyncStatusT = 'running' | 'success' | 'failed';
 

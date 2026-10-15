@@ -1,6 +1,7 @@
 // POST /api/admin/run-job — trigger a cron job manually.
 // Body: { job: 'page_insights' | 'posts' | 'health' | 'ladipage'
-//              | 'bundle_import' | 'bundle_import_poller' | 'bundle_connect_poller' }
+//              | 'bundle_import' | 'bundle_import_poller' | 'bundle_connect_poller'
+//              | 'ga4_sync' | 'ads_ingestion' | 'fb_scrape' }
 //
 // Auth (một trong hai):
 //   - Session admin (gọi từ UI), HOẶC
@@ -32,6 +33,7 @@ const bodySchema = z.object({
     'bundle_connect_poller',
     'ga4_sync',
     'ads_ingestion',
+    'fb_scrape',
   ]),
 });
 
@@ -68,7 +70,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json(
       {
         error:
-          'job phải là một trong: page_insights, posts, health, ladipage, bundle_import, bundle_import_poller, bundle_connect_poller',
+          'job phải là một trong: page_insights, posts, health, ladipage, bundle_import, bundle_import_poller, bundle_connect_poller, ga4_sync, ads_ingestion, fb_scrape',
       },
       { status: 400 }
     );
@@ -126,6 +128,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       case 'ads_ingestion': {
         const { runAdsIngestionJob } = await import('@/lib/cron/job-ads-ingestion');
         report = await runAdsIngestionJob();
+        break;
+      }
+      case 'fb_scrape': {
+        const { runFbScrapeJob } = await import('@/lib/cron/job-fb-scrape');
+        await runFbScrapeJob();
         break;
       }
     }
