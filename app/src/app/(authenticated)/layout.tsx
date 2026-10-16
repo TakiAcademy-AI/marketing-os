@@ -18,9 +18,9 @@ export default async function AuthenticatedLayout({
 
   return (
     <RoleProvider role={role}>
-      <div className="flex min-h-screen bg-zinc-50">
+      <div className="app-surface flex min-h-screen">
         <SidebarNav user={user} role={role} />
-        <main className="flex-1 overflow-auto p-6 min-w-0">
+        <main className="flex-1 overflow-auto p-6 lg:p-8 min-w-0">
           {isGuest(role) && <ReadOnlyBanner />}
           {children}
         </main>

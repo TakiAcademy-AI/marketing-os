@@ -10,7 +10,7 @@ export default async function LoginPage() {
   if (user) redirect('/dashboard');
 
   return (
-    <main className="relative flex min-h-screen flex-col items-center justify-center bg-white px-6">
+    <main className="app-surface relative flex min-h-screen flex-col items-center justify-center px-6">
       {/* Subtle grid pattern in the background — Linear-style ambience.
           Pointer-events disabled so it never intercepts focus on the form. */}
       <div

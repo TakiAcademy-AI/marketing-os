@@ -1,3 +1,4 @@
+import { Eye, MessageSquare, Target, Users, Wallet } from 'lucide-react';
 import { KpiHeroCard } from './kpi-hero-card';
 import type { KpiData } from '@/lib/queries/dashboard-kpi';
 import type { TrendDataPoint } from '@/lib/queries/dashboard-trend';
@@ -47,55 +48,52 @@ export function KpiHeroGrid({ data, days, trend = [] }: KpiHeroGridProps) {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
       <KpiHeroCard
         title="Total Reach"
-        icon="👁"
+        icon={Eye}
+        tone="brand"
         value={data.reach}
         prevValue={data.reachPrev}
         format="number"
         subtitle={compareLabel}
         sparkline={reachSeries}
-        sparklineColor="#3B82F6"
       />
       <KpiHeroCard
         title="Engagement Rate"
-        icon="💬"
+        icon={MessageSquare}
+        tone="orange"
         value={data.avgEr}
         prevValue={data.avgErPrev}
         format="percent"
         subtitle={compareLabel}
-        accentClass="border-l-4 border-l-orange-400"
         sparkline={erSeries}
-        sparklineColor="#F97316"
       />
       <KpiHeroCard
         title="Lead"
-        icon="🎯"
+        icon={Target}
+        tone="green"
         value={data.conversions}
         prevValue={data.conversionsPrev}
         format="number"
         subtitle="Ladipage + tin nhắn"
-        accentClass="border-l-4 border-l-green-400"
         sparkline={leadSeries}
-        sparklineColor="#10B981"
       />
       <KpiHeroCard
         title="Doanh thu"
-        icon="💰"
+        icon={Wallet}
+        tone="amber"
         value={data.revenue}
         prevValue={data.revenuePrev}
         format="currency"
         subtitle="nhập tay theo kênh"
-        accentClass="border-l-4 border-l-amber-400"
       />
       <KpiHeroCard
         title="Total Followers"
-        icon="👥"
+        icon={Users}
+        tone="violet"
         value={data.totalFollowers}
         prevValue={data.totalFollowersPrev}
         format="number"
         subtitle={compareLabel}
-        accentClass="border-l-4 border-l-purple-400"
         sparkline={followersSeries}
-        sparklineColor="#A855F7"
       />
     </div>
   );

@@ -49,7 +49,7 @@ export function LoginForm() {
     <div className="relative z-10 w-full max-w-[380px]">
       {/* Brand mark — small, restrained. Linear-style: text logo, no card. */}
       <div className="mb-10 flex items-center gap-2">
-        <div className="flex size-8 items-center justify-center rounded-lg bg-zinc-900 text-white">
+        <div className="flex size-9 items-center justify-center rounded-xl bg-brand-gradient text-white shadow-sm">
           <span className="text-sm font-bold">M</span>
         </div>
         <span className="text-sm font-semibold tracking-tight text-zinc-900">
@@ -87,7 +87,7 @@ export function LoginForm() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="bạn@công-ty.com"
               disabled={loading}
-              className="h-10 w-full rounded-lg border border-zinc-200 bg-white pl-9 pr-3 text-sm text-zinc-900 placeholder:text-zinc-400 transition-colors focus:border-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900/10 disabled:opacity-50"
+              className="h-10 w-full rounded-lg border border-zinc-200 bg-white pl-9 pr-3 text-sm text-zinc-900 placeholder:text-zinc-400 transition-colors focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500/15 disabled:opacity-50"
             />
           </div>
         </div>
@@ -111,7 +111,7 @@ export function LoginForm() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               disabled={loading}
-              className="h-10 w-full rounded-lg border border-zinc-200 bg-white pl-9 pr-3 text-sm text-zinc-900 placeholder:text-zinc-400 transition-colors focus:border-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900/10 disabled:opacity-50"
+              className="h-10 w-full rounded-lg border border-zinc-200 bg-white pl-9 pr-3 text-sm text-zinc-900 placeholder:text-zinc-400 transition-colors focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500/15 disabled:opacity-50"
             />
           </div>
         </div>
@@ -130,7 +130,7 @@ export function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="group mt-2 inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-zinc-900 px-4 text-sm font-medium text-white shadow-sm transition-all hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-900/30 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+          className="group mt-2 inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-xl bg-brand-gradient px-4 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:shadow-md hover:brightness-[1.05] focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading && <Loader2 className="size-4 animate-spin" />}
           {loading ? 'Đang đăng nhập…' : 'Đăng nhập'}

@@ -1,15 +1,30 @@
+import type { LucideIcon } from 'lucide-react';
+import { TrendingDown, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export type KpiFormat = 'number' | 'percent' | 'currency';
 
+/** Màu nhấn theo thẻ. Nền icon dùng sắc rất nhạt để không át con số — con số
+ *  mới là thứ người ta đọc. */
+const TONE = {
+  brand: { chip: 'bg-brand-50 text-brand-600', stroke: '#6366f1' },
+  orange: { chip: 'bg-orange-50 text-orange-600', stroke: '#f97316' },
+  green: { chip: 'bg-emerald-50 text-emerald-600', stroke: '#10b981' },
+  amber: { chip: 'bg-amber-50 text-amber-600', stroke: '#f59e0b' },
+  violet: { chip: 'bg-violet-50 text-violet-600', stroke: '#8b5cf6' },
+} as const;
+
 interface KpiHeroCardProps {
   title: string;
-  icon: string;
+  /** Icon SVG (lucide), KHÔNG phải emoji: emoji render khác nhau theo hệ điều
+   *  hành, không đổi màu theo theme và trông như lỗi font trên Windows. */
+  icon: LucideIcon;
+  /** Màu nhấn của thẻ, dùng cho nền icon + đường sparkline. */
+  tone?: 'brand' | 'orange' | 'green' | 'amber' | 'violet';
   value: number;
   prevValue: number;
   format: KpiFormat;
   subtitle: string;
-  accentClass?: string;
   // Tiny inline trend used by the right-side mini chart.
   // Keep length small (≤ 14 points). Empty array hides the chart.
   sparkline?: number[];
@@ -76,12 +91,12 @@ function buildSparklinePath(data: number[]): string {
 
 export function KpiHeroCard({
   title,
-  icon,
+  icon: Icon,
   value,
   prevValue,
   format,
   subtitle,
-  accentClass,
+  tone = 'brand',
   sparkline,
   sparklineColor = '#3B82F6',
 }: KpiHeroCardProps) {
@@ -93,14 +108,25 @@ export function KpiHeroCard({
   return (
     <div
       className={cn(
-        'flex flex-col gap-3 rounded-xl bg-white p-5 ring-1 ring-zinc-200 shadow-sm',
-        accentClass
+        'group flex flex-col gap-3 rounded-2xl bg-white p-5 ring-1 ring-zinc-200/70',
+        'shadow-[0_1px_3px_0_rgb(15_23_42_/_0.06)] transition-shadow duration-200',
+        'hover:shadow-[0_12px_28px_-6px_rgb(15_23_42_/_0.10)]'
       )}
     >
       <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-zinc-500">
-          <span className="text-base">{icon}</span>
-          {title}
+        <div className="flex items-center gap-2.5 min-w-0">
+          <span
+            aria-hidden
+            className={cn(
+              'inline-flex size-8 shrink-0 items-center justify-center rounded-xl',
+              TONE[tone].chip
+            )}
+          >
+            <Icon className="size-4" />
+          </span>
+          <span className="text-[11px] font-semibold uppercase tracking-wide text-zinc-500 truncate">
+            {title}
+          </span>
         </div>
         {/* Sparkline — fixed 60×24 viewBox, scales via width=full of container */}
         {path && (
@@ -113,8 +139,8 @@ export function KpiHeroCard({
             <path
               d={path}
               fill="none"
-              stroke={sparklineColor}
-              strokeWidth="1.5"
+              stroke={TONE[tone].stroke}
+              strokeWidth="1.75"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
@@ -122,20 +148,32 @@ export function KpiHeroCard({
         )}
       </div>
 
-      <div className="text-3xl font-bold text-zinc-900 tabular-nums leading-none">
+      <div
+        data-slot="kpi-value"
+        className="text-[32px] font-bold text-zinc-900 leading-none tracking-tight"
+      >
         {formatValue(value, format)}
       </div>
 
       <div className="flex items-center gap-2 text-xs">
+        {/* Biến động dùng icon + chữ, không chỉ dựa vào màu — người mù màu
+            vẫn phân biệt được tăng/giảm. */}
         <span
           className={cn(
-            'inline-flex items-center gap-0.5 font-semibold',
-            isPositive ? 'text-green-600' : 'text-red-500'
+            'inline-flex items-center gap-1 rounded-lg px-1.5 py-0.5 font-semibold',
+            isPositive
+              ? 'bg-emerald-50 text-emerald-700'
+              : 'bg-rose-50 text-rose-700'
           )}
         >
-          {isPositive ? '↑' : '↓'} {Math.abs(delta).toFixed(1)}%
+          {isPositive ? (
+            <TrendingUp className="size-3" aria-hidden />
+          ) : (
+            <TrendingDown className="size-3" aria-hidden />
+          )}
+          {Math.abs(delta).toFixed(1)}%
         </span>
-        <span className="text-zinc-400">{subtitle}</span>
+        <span className="text-zinc-500 truncate">{subtitle}</span>
       </div>
     </div>
   );

@@ -1,36 +1,102 @@
 @import "tailwindcss";
 
-/* Design tokens — light theme (default).
-   Theo chuẩn shadcn: mỗi token có 1 raw value (:root) + map vào Tailwind utility (@theme inline).
-   Code dùng các class như bg-popover, bg-muted, border-input → bắt buộc phải define đủ. */
+/* ============================================================================
+   HỆ MÀU & TOKEN — Marketing OS
+   ============================================================================
+
+   CÁCH TIẾP CẬN: codebase có ~1700 class `zinc-*` viết cứng rải trên 185 file
+   (chỉ ~170 chỗ dùng token). Sửa tay từng chỗ vừa lâu vừa chắc chắn sót, nên
+   thay vì thế ta GHI ĐÈ CHÍNH BẢNG MÀU `zinc` của Tailwind v4 ở `@theme`.
+   Một chỗ đổi, toàn bộ 1700 class đổi theo, không đụng file nào khác.
+
+   Neutral mới là thang xám LẠNH (ngả xanh) thay cho zinc trung tính ngả ấm —
+   nền sáng hơn, sạch hơn, hợp sản phẩm dữ liệu. Giá trị lấy theo thang `slate`
+   nên tỉ lệ tương phản đã được kiểm chứng, không phải tự chế.
+   ========================================================================== */
+
+@theme {
+  /* ── Neutral: ghi đè zinc → xám lạnh ngả xanh ───────────────────────── */
+  --color-zinc-50: #f8fafc;
+  --color-zinc-100: #f1f5f9;
+  --color-zinc-200: #e2e8f0;
+  --color-zinc-300: #cbd5e1;
+  --color-zinc-400: #94a3b8;
+  --color-zinc-500: #64748b; /* 4.8:1 trên nền trắng — đạt chuẩn body text */
+  --color-zinc-600: #475569;
+  --color-zinc-700: #334155;
+  --color-zinc-800: #1e293b;
+  --color-zinc-900: #0f172a;
+  --color-zinc-950: #020617;
+
+  /* ── Brand: indigo → violet. Chất "AI" đến từ cặp màu này, dùng tiết chế
+        ở điểm nhấn (nav đang chọn, nút chính, viền card nổi bật) chứ không
+        tô tràn — tô tràn làm dashboard khó đọc. ──────────────────────── */
+  --color-brand-50: #eef2ff;
+  --color-brand-100: #e0e7ff;
+  --color-brand-200: #c7d2fe;
+  --color-brand-300: #a5b4fc;
+  --color-brand-400: #818cf8;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5; /* 6.5:1 trên trắng — chữ trên nền trắng OK */
+  --color-brand-700: #4338ca;
+  --color-brand-800: #3730a3;
+  --color-brand-900: #312e81;
+
+  --color-accent-400: #a78bfa;
+  --color-accent-500: #8b5cf6;
+  --color-accent-600: #7c3aed;
+
+  /* ── Bo góc: mềm hơn mặc định cho cảm giác hiện đại ─────────────────── */
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.125rem;
+  --radius-2xl: 1.5rem;
+
+  /* ── Đổ bóng: ngả xanh thay vì đen thuần, rất nhẹ. Bóng đen trên nền
+        lạnh trông bẩn. ──────────────────────────────────────────────── */
+  --shadow-xs: 0 1px 2px 0 rgb(15 23 42 / 0.04);
+  --shadow-sm: 0 1px 3px 0 rgb(15 23 42 / 0.06), 0 1px 2px -1px rgb(15 23 42 / 0.04);
+  --shadow-md: 0 4px 12px -2px rgb(15 23 42 / 0.08), 0 2px 6px -2px rgb(15 23 42 / 0.04);
+  --shadow-lg: 0 12px 28px -6px rgb(15 23 42 / 0.10), 0 4px 10px -4px rgb(15 23 42 / 0.05);
+}
+
+/* Design tokens — light theme.
+   Theo chuẩn shadcn: mỗi token có 1 raw value (:root) + map vào Tailwind
+   utility (@theme inline). Code dùng bg-popover, bg-muted, border-input… nên
+   bắt buộc define đủ. */
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #0f172a;
 
   --card: #ffffff;
-  --card-foreground: #171717;
+  --card-foreground: #0f172a;
 
   --popover: #ffffff;
-  --popover-foreground: #171717;
+  --popover-foreground: #0f172a;
 
-  --primary: #18181b;
-  --primary-foreground: #fafafa;
+  /* primary bám brand thay vì đen tuyền — nút chính, link, trạng thái chọn */
+  --primary: #4f46e5;
+  --primary-foreground: #ffffff;
 
-  --secondary: #f4f4f5;
-  --secondary-foreground: #18181b;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #1e293b;
 
-  --muted: #f4f4f5;
-  --muted-foreground: #71717a;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
 
-  --accent: #f4f4f5;
-  --accent-foreground: #18181b;
+  --accent: #eef2ff;
+  --accent-foreground: #4338ca;
 
-  --destructive: #ef4444;
-  --destructive-foreground: #fafafa;
+  --destructive: #e11d48;
+  --destructive-foreground: #ffffff;
 
-  --border: #e4e4e7;
-  --input: #e4e4e7;
-  --ring: #a1a1aa;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #818cf8;
+
+  /* Nền app: không phẳng tuyệt đối. Hai quầng sáng rất nhạt ở hai góc tạo
+     chiều sâu mà không gây nhiễu khi đọc số. */
+  --app-bg: #f8fafc;
+  --brand-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
 }
 
 @theme inline {
@@ -62,45 +128,74 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  /* Montserrat (next/font) + system fallbacks theo yêu cầu */
-  --font-sans: var(--font-sans-app), 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: var(--font-sans-app), 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* CỐ Ý KHÔNG tự lật sang dark theo prefers-color-scheme.
+   Giao diện dùng ~1700 class zinc viết cứng (bg-zinc-50, text-zinc-900…) nên
+   chỉ lật biến :root sẽ ra nửa sáng nửa tối: nền tối mà card vẫn trắng. Trước
+   đây đúng là bị vậy. Muốn có dark mode thật thì phải chuyển hết sang token —
+   việc riêng, không gộp vào đây. */
 
-    --card: #0a0a0a;
-    --card-foreground: #ededed;
-
-    --popover: #0a0a0a;
-    --popover-foreground: #ededed;
-
-    --primary: #fafafa;
-    --primary-foreground: #18181b;
-
-    --secondary: #27272a;
-    --secondary-foreground: #fafafa;
-
-    --muted: #27272a;
-    --muted-foreground: #a1a1aa;
-
-    --accent: #27272a;
-    --accent-foreground: #fafafa;
-
-    --destructive: #7f1d1d;
-    --destructive-foreground: #fafafa;
-
-    --border: #27272a;
-    --input: #27272a;
-    --ring: #d4d4d8;
-  }
+html {
+  color-scheme: light;
 }
 
 body {
-  background: var(--background);
+  background: var(--app-bg);
   color: var(--foreground);
-  font-family: var(--font-sans-app), 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-sans-app), 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Số liệu dashboard dùng chữ số đều bề ngang (tabular) — cột số không nhảy
+   khi giá trị đổi, và các hàng thẳng cột nhau. */
+.tabular,
+table,
+[data-slot='kpi-value'] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Vòng focus thống nhất, thấy rõ khi dùng bàn phím. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Tôn trọng người tắt hiệu ứng chuyển động. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Tiện ích dùng lại ──────────────────────────────────────────────── */
+
+/* Chữ gradient cho tiêu đề thương hiệu. */
+.text-brand-gradient {
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.bg-brand-gradient {
+  background: var(--brand-gradient);
+}
+
+/* Nền app có chiều sâu: hai quầng brand rất nhạt, cố định, không cuộn theo. */
+.app-surface {
+  background-color: var(--app-bg);
+  background-image:
+    radial-gradient(60rem 60rem at 110% -10%, rgb(139 92 246 / 0.07), transparent 60%),
+    radial-gradient(50rem 50rem at -10% 0%, rgb(99 102 241 / 0.06), transparent 55%);
+  background-attachment: fixed;
 }
