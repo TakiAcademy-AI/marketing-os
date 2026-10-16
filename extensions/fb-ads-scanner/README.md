@@ -128,10 +128,17 @@ cấu hình lại.
 
 ### Cách nó chạy
 
-Tới giờ, service worker mở **tab nền** (`active: false`, có ghim) cho từng page,
-để `feed-interceptor.js` bắt response GraphQL, cuộn vài nhịp cho Facebook tải
-thêm bài, gom rồi đóng tab. Tab có nằm trong thanh tab nhưng không nhảy lên
-trước mặt và không cướp focus. Giữa các page nghỉ 15 giây.
+Tới giờ, service worker mở tab cho từng page (timeline rồi tab `/reels`), đọc
+dữ liệu Facebook nhúng sẵn trong HTML, cuộn tới khi hết bài, gom rồi đóng tab.
+Giữa hai mặt nghỉ 8 giây, giữa các page nghỉ 15 giây.
+
+**Tab sẽ HIỆN LÊN vài giây** (`active: true`) — đây là bắt buộc, không phải sơ
+suất: Chrome tiết chế tab nền, không vẽ layout nên `IntersectionObserver` của
+Facebook không chạy, lazy-load không kích hoạt và chỉ lấy được lô bài đầu
+(~10 reel). Quét xong, extension trả focus về đúng tab bạn đang làm việc.
+
+Cuộn **tự dừng khi hết bài** (buffer không lớn thêm sau 3 nhịp liên tiếp), trần
+an toàn 30 nhịp — không cuộn đếm lần cố định vì số reel mỗi page khác nhau.
 
 Node thô được **rút gọn** trước khi gửi (node Comet nặng vài trăm KB → body
 phình → 502), rồi POST về `/api/channels/ingest-posts`. **Server map, không
@@ -142,6 +149,9 @@ người cài lại extension.
 
 - **Chrome phải đang chạy** và đã đăng nhập Facebook. Máy ngủ thì không có dữ
   liệu. Đây không còn là cron trên server.
+- Tab quét hiện lên trước mặt vài giây mỗi page. Đổi lại mới cuộn được hết reel.
+- Số **follower** thì KHÔNG cần extension: server tự lấy bằng curl-impersonate,
+  ẩn danh, chính xác tới từng đơn vị. Xem lib/fb-scrape/curl-impersonate.ts.
 - MV3 tắt service worker khi rảnh, nên lịch chạy bằng `chrome.alarms`; Chrome
   có thể lệch giờ đôi chút.
 - Nó lái tài khoản Facebook thật theo lịch. Facebook có thể giới hạn, bắt

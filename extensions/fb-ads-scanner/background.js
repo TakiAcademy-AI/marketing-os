@@ -22,7 +22,7 @@ const DEFAULTS = {
   token: '',
   handles: [], // ['takidocvinhantam', ...]
   intervalMinutes: 720, // 12 tiếng
-  scrollRounds: 6,
+  scrollRounds: 30, // trần an toàn; autoScroll tự dừng khi hết bài
   scrollPauseMs: 2500,
   autoEnabled: false,
 };
@@ -65,7 +65,12 @@ function sendToTab(tabId, msg) {
 /** Quét 1 page. Trả { handle, stories } — chưa đẩy đi đâu. */
 async function scrapeOne(handle, conf, path) {
   const url = `https://www.facebook.com/${encodeURIComponent(handle)}${path}`;
-  const tab = await chrome.tabs.create({ url, active: false, pinned: true });
+  // active: true là BẮT BUỘC để cuộn ăn. Chrome tiết chế tab nền: không vẽ
+  // layout nên IntersectionObserver của Facebook không chạy, lazy-load không
+  // kích hoạt, và chỉ lấy được lô bài đầu. Đổi lại tab sẽ hiện lên vài giây —
+  // trả lại tab đang dùng ngay sau khi quét xong để đỡ phiền.
+  const [prev] = await chrome.tabs.query({ active: true, currentWindow: true });
+  const tab = await chrome.tabs.create({ url, active: true, pinned: true });
   try {
     await waitForTabLoad(tab.id);
     // Interceptor chạy ở document_start nhưng GraphQL đầu tiên về sau đó một nhịp.
@@ -85,6 +90,10 @@ async function scrapeOne(handle, conf, path) {
     } catch (_) {
       /* tab có thể đã bị đóng tay */
     }
+    // Trả focus về chỗ người dùng đang làm việc.
+    try {
+      if (prev && prev.id) await chrome.tabs.update(prev.id, { active: true });
+    } catch (_) {}
   }
 }
 
@@ -96,18 +105,32 @@ async function push(handle, stories, conf) {
   // không phân biệt được "extension chưa chạy" với "chạy nhưng không thu được
   // gì" — hai nguyên nhân cần sửa khác hẳn nhau.
   const endpoint = conf.siteUrl.replace(/\/+$/, '') + '/api/channels/ingest-posts';
+  // Chia lô: server chặn 500 item/lần, và từ khi cuộn ăn thì page nhiều reel
+  // vượt trần dễ dàng → 413 và mất sạch lượt quét. Lô 400 cho dư biên.
+  const CHUNK = 400;
+  const totals = { received: 0, mapped: 0, upserted: 0 };
+  let unmappedSample;
   try {
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${conf.token}`,
-      },
-      body: JSON.stringify({ handle, items: stories }),
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) return { ok: false, error: data.error || `HTTP ${res.status}` };
-    return { ok: true, data };
+    for (let i = 0; i < stories.length; i += CHUNK) {
+      const slice = stories.slice(i, i + CHUNK);
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${conf.token}`,
+        },
+        body: JSON.stringify({ handle, items: slice }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) return { ok: false, error: data.error || `HTTP ${res.status}` };
+      totals.received += data.received || 0;
+      totals.mapped += data.mapped || 0;
+      totals.upserted += data.upserted || 0;
+      if (!unmappedSample && data.unmappedSample && data.unmappedSample.length) {
+        unmappedSample = data.unmappedSample;
+      }
+    }
+    return { ok: true, data: { ...totals, unmappedSample } };
   } catch (err) {
     return { ok: false, error: String(err) };
   }

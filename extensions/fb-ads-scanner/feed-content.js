@@ -175,14 +175,27 @@
 
   // Timeline chỉ tải thêm khi cuộn. Background bảo cuộn bao nhiêu nhịp thì
   // cuộn bấy nhiêu, nghỉ giữa các nhịp cho FB kịp trả dữ liệu.
-  async function autoScroll(rounds, pauseMs) {
-    for (let i = 0; i < rounds; i++) {
+  // Cuộn tới khi HẾT bài, không cuộn đếm lần cố định: số reel mỗi page khác
+  // nhau, đếm cứng thì page nhiều bài bị cắt cụt còn page ít bài thì chờ phí.
+  // Dừng khi buffer không lớn thêm sau STALL_ROUNDS nhịp liên tiếp.
+  const STALL_ROUNDS = 3;
+  async function autoScroll(maxRounds, pauseMs) {
+    let stall = 0;
+    let last = buffer.size;
+    for (let i = 0; i < maxRounds; i++) {
       window.scrollTo(0, document.body.scrollHeight);
       // Một số surface chỉ nạp thêm khi thấy sự kiện scroll thật.
       window.dispatchEvent(new Event('scroll'));
       await new Promise((r) => setTimeout(r, pauseMs));
       try { scanInline(); } catch (_) {}
+      if (buffer.size > last) {
+        last = buffer.size;
+        stall = 0;
+      } else if (++stall >= STALL_ROUNDS) {
+        break;
+      }
     }
+    return buffer.size;
   }
 
   // Quét ngay khi trang dựng xong, không đợi ai hỏi.
@@ -204,8 +217,8 @@
         inlineFound: inline,
       });
     } else if (msg.cmd === 'FEED_SCROLL') {
-      autoScroll(msg.rounds || 5, msg.pauseMs || 2000).then(() =>
-        sendResponse({ ok: true, count: buffer.size })
+      autoScroll(msg.rounds || 30, msg.pauseMs || 2000).then((count) =>
+        sendResponse({ ok: true, count })
       );
       return true; // giữ kênh mở cho sendResponse bất đồng bộ
     } else if (msg.cmd === 'FEED_CLEAR') {
