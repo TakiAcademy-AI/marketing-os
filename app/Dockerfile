@@ -37,7 +37,7 @@ FROM alpine:3.20 AS curlimp
 ARG CURL_IMPERSONATE_VERSION=2.2.3
 RUN wget -qO /tmp/ci.tgz "https://github.com/lexiforest/curl-impersonate/releases/download/v${CURL_IMPERSONATE_VERSION}/curl-impersonate-v${CURL_IMPERSONATE_VERSION}.x86_64-linux-musl.tar.gz" && \
     mkdir -p /tmp/ci && tar -xzf /tmp/ci.tgz -C /tmp/ci && \
-    chmod +x /tmp/ci/curl-impersonate /tmp/ci/curl_chrome131
+    chmod +x /tmp/ci/curl-impersonate
 
 # Stage 3: Production runner
 FROM node:20-alpine AS runner
@@ -104,11 +104,11 @@ COPY --from=fbcli /tmp/fb /usr/local/bin/fb
 ENV FB_DATA_DIR=/app/storage/fb-cli
 
 # curl-impersonate — quét trang Facebook công khai (lib/fb-scrape/curl-impersonate.ts).
-# Wrapper curl_chrome131 gọi ./curl-impersonate cạnh nó (dir=${0%/*}) nên hai
-# file phải nằm CÙNG thư mục, không symlink tách rời được.
-COPY --from=curlimp /tmp/ci/curl-impersonate /usr/local/lib/curl-impersonate/curl-impersonate
-COPY --from=curlimp /tmp/ci/curl_chrome131 /usr/local/lib/curl-impersonate/curl_chrome131
-ENV CURL_IMPERSONATE_BIN=/usr/local/lib/curl-impersonate/curl_chrome131
+# Gọi THẲNG binary với cờ --impersonate, KHÔNG dùng wrapper curl_chrome131:
+# wrapper là script bash mà alpine chỉ có ash → "env: can't execute 'bash'".
+# Cờ native cho kết quả y hệt, lại bỏ được ràng buộc hai file cùng thư mục.
+COPY --from=curlimp /tmp/ci/curl-impersonate /usr/local/bin/curl-impersonate
+ENV CURL_IMPERSONATE_BIN=/usr/local/bin/curl-impersonate
 
 # meta-ads-collector — quét Facebook Ads Library free (lib/news/meta-ads-cli.ts,
 # route /api/news/scan). Python CLI; curl_cffi có wheel musllinux nên không cần

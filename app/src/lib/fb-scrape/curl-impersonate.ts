@@ -13,9 +13,13 @@
 import { execFile } from 'node:child_process';
 import { existsSync } from 'node:fs';
 
-/** Wrapper curl_chrome131 — gọi ./curl-impersonate cạnh nó nên hai file phải
- *  cùng thư mục. Đường dẫn khai trong Dockerfile qua ENV. */
-const BIN = process.env.CURL_IMPERSONATE_BIN || 'curl_chrome131';
+/** Binary curl-impersonate. Đường dẫn khai trong Dockerfile qua ENV. */
+const BIN = process.env.CURL_IMPERSONATE_BIN || 'curl-impersonate';
+
+/** Hồ sơ trình duyệt để giả. Gọi bằng cờ native thay vì script wrapper
+ *  curl_chrome131: wrapper là bash mà image alpine chỉ có ash
+ *  → "env: can't execute 'bash'". Cờ cho kết quả y hệt. */
+const IMPERSONATE = process.env.CURL_IMPERSONATE_PROFILE || 'chrome131';
 
 /** Trang Facebook rất nặng (~18MB cho tab reels) — buffer phải rộng tay. */
 const MAX_BUFFER = 40 * 1024 * 1024;
@@ -41,6 +45,8 @@ export function curlImpersonateAvailable(): boolean {
  */
 export function curlGet(url: string, proxy?: string): Promise<string> {
   const args = [
+    '--impersonate',
+    IMPERSONATE,
     '-sL',
     '--compressed',
     '--max-time',
