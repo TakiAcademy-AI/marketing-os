@@ -14,29 +14,27 @@
   // dấu hiệu cấu trúc thay vì tên field cố định, để Comet đổi tên vẫn bắt được.
   function looksLikeStory(o) {
     if (!o || typeof o !== 'object' || Array.isArray(o)) return false;
-
-    // Node REEL ở tab /reels: có lượt xem + id, nhưng KHÔNG có feedback hay
-    // comet_sections như story ở timeline. Bắt riêng, nếu không thì quét tab
-    // reels về tay không.
-    const hasViews =
-      o.play_count_reduced != null || o.play_count != null || o.video_view_count != null;
-    if (hasViews && typeof o.id === 'string') return true;
-
-    const hasId =
-      typeof o.post_id === 'string' ||
-      typeof o.postID === 'string' ||
-      (typeof o.id === 'string' && o.feedback);
-    if (!hasId) return false;
+    // BẮT BUỘC có post_id. Chỉ dựa vào `id` thì vớ cả node bình luận và node
+    // feedback — đo trên HTML thật: id của chúng là base64 của "comment:…" và
+    // "feedback:…", vẫn kèm creation_time và lượt xem nên lọt mọi bộ lọc mềm.
+    // Node reel ở tab /reels CÓ post_id (xác nhận trên HTML production), nên
+    // siết thế này không làm mất reel.
+    const postId = o.post_id || o.postID;
+    if (typeof postId !== 'string' || !postId) return false;
     return (
       o.creation_time != null ||
       o.created_time != null ||
       o.creationTime != null ||
+      o.short_form_video_context != null ||
       (o.comet_sections && o.comet_sections.content)
     );
   }
 
+  // Độ sâu 40 chứ không phải 14: node reel thật nằm ở độ sâu 23 trong cây
+  // Relay (đo trên HTML thật — require.0.3.0.__bbox.require…profile_reel_node.
+  // node). Giới hạn 14 khiến quét về 0 bài mà không báo lỗi gì.
   function deepCollect(obj, out, seen, depth) {
-    if (!obj || typeof obj !== 'object' || depth > 14) return;
+    if (!obj || typeof obj !== 'object' || depth > 40) return;
     if (seen.has(obj)) return;
     seen.add(obj);
     if (Array.isArray(obj)) {

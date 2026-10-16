@@ -6,7 +6,8 @@
   const buffer = new Map(); // post_id -> node đã rút gọn
 
   function idOf(s) {
-    return String(s.post_id || s.postID || s.id || '');
+    // Chỉ post_id. Fallback về o.id sẽ gom cả node comment/feedback.
+    return String(s.post_id || s.postID || '');
   }
 
   function num(v) {
@@ -48,7 +49,15 @@
     const fb = s.feedback || {};
     return {
       post_id: s.post_id || s.postID || s.id,
-      wwwURL: s.wwwURL || s.www_url || s.url || pick(s, 'comet_sections.content.story.wwwURL'),
+      wwwURL:
+        s.wwwURL ||
+        s.www_url ||
+        s.url ||
+        pick(s, 'comet_sections.content.story.wwwURL') ||
+        // Reel ở tab /reels: permalink nằm trong short_form_video_context,
+        // dạng https://www.facebook.com/reel/<id>. Thiếu nó thì server không
+        // nhận ra là reel và gán nhầm thành 'status'.
+        pick(s, 'short_form_video_context.shareable_url'),
       creation_time:
         s.creation_time ||
         s.created_time ||
@@ -60,6 +69,11 @@
           pick(s, 'comet_sections.content.story.message.text') ||
           s.message_text,
       },
+      // Cờ nhận dạng reel: giữ lại để server không phải suy từ URL (URL có thể
+      // thiếu ở surface khác).
+      short_form_video_context: s.short_form_video_context
+        ? { play_count_reduced: pick(s, 'short_form_video_context.play_count_reduced') }
+        : undefined,
       feedback: {
         reaction_count: { count: num(pick(fb, 'reaction_count.count')) },
         comment_rendering_instance: {
@@ -75,9 +89,78 @@
           num(fb.video_view_count) ??
           num(s.video_view_count) ??
           num(s.play_count) ??
-          compact(s.play_count_reduced),
+          compact(s.play_count_reduced) ??
+          // Đường thật của reel ở tab /reels, đo trên HTML production.
+          compact(pick(s, 'short_form_video_context.play_count_reduced')) ??
+          num(pick(s, 'short_form_video_context.play_count')),
       },
     };
+  }
+
+
+  // ─── Đọc dữ liệu nhúng sẵn trong HTML ────────────────────────────────────
+  // Lô bài ĐẦU TIÊN Facebook render thẳng vào trang qua khối
+  // <script type="application/json" data-sjs>, KHÔNG đi qua /api/graphql.
+  // Interceptor chỉ hook graphql nên không thấy lô này — và trong TAB NỀN thì
+  // Chrome tiết chế, IntersectionObserver thường không chạy nên cuộn cũng
+  // không sinh request. Kết quả: quét về 0 bài. Đọc thẳng DOM là đường chắc
+  // chắn nhất, không phụ thuộc cuộn hay tab có được vẽ hay không.
+  function looksLikeStory(o) {
+    if (!o || typeof o !== 'object' || Array.isArray(o)) return false;
+    // BẮT BUỘC có post_id. Chỉ dựa vào `id` thì vớ cả node bình luận và node
+    // feedback — đo trên HTML thật: id của chúng là base64 của "comment:…" và
+    // "feedback:…", vẫn kèm creation_time và lượt xem nên lọt mọi bộ lọc mềm.
+    // Node reel ở tab /reels CÓ post_id (xác nhận trên HTML production), nên
+    // siết thế này không làm mất reel.
+    const postId = o.post_id || o.postID;
+    if (typeof postId !== 'string' || !postId) return false;
+    return (
+      o.creation_time != null ||
+      o.created_time != null ||
+      o.creationTime != null ||
+      o.short_form_video_context != null ||
+      (o.comet_sections && o.comet_sections.content)
+    );
+  }
+
+  // Độ sâu 40 chứ không phải 14: node reel thật nằm ở độ sâu 23 trong cây
+  // Relay (đo trên HTML thật — require.0.3.0.__bbox.require…profile_reel_node.
+  // node). Giới hạn 14 khiến quét về 0 bài mà không báo lỗi gì.
+  function deepCollect(obj, out, seen, depth) {
+    if (!obj || typeof obj !== 'object' || depth > 40) return;
+    if (seen.has(obj)) return;
+    seen.add(obj);
+    if (Array.isArray(obj)) {
+      for (const v of obj) deepCollect(v, out, seen, depth + 1);
+      return;
+    }
+    if (looksLikeStory(obj)) out.push(obj);
+    for (const k in obj) {
+      try { deepCollect(obj[k], out, seen, depth + 1); } catch (_) {}
+    }
+  }
+
+  function scanInline() {
+    let added = 0;
+    const nodes = document.querySelectorAll('script[type="application/json"]');
+    for (const el of nodes) {
+      const txt = el.textContent;
+      if (!txt || txt.length < 64) continue;
+      if (
+        txt.indexOf('creation_time') === -1 &&
+        txt.indexOf('comet_sections') === -1 &&
+        txt.indexOf('play_count') === -1
+      ) continue;
+      let parsed;
+      try { parsed = JSON.parse(txt); } catch (_) { continue; }
+      const found = [];
+      deepCollect(parsed, found, new Set(), 0);
+      for (const st of found) {
+        const id = idOf(st);
+        if (id && !buffer.has(id)) { buffer.set(id, slim(st)); added++; }
+      }
+    }
+    return added;
   }
 
   window.addEventListener('message', function (e) {
@@ -95,14 +178,31 @@
   async function autoScroll(rounds, pauseMs) {
     for (let i = 0; i < rounds; i++) {
       window.scrollTo(0, document.body.scrollHeight);
+      // Một số surface chỉ nạp thêm khi thấy sự kiện scroll thật.
+      window.dispatchEvent(new Event('scroll'));
       await new Promise((r) => setTimeout(r, pauseMs));
+      try { scanInline(); } catch (_) {}
     }
+  }
+
+  // Quét ngay khi trang dựng xong, không đợi ai hỏi.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(scanInline, 1500));
+  } else {
+    setTimeout(scanInline, 1500);
   }
 
   chrome.runtime.onMessage.addListener(function (msg, _sender, sendResponse) {
     if (!msg) return;
     if (msg.cmd === 'FEED_COLLECT') {
-      sendResponse({ stories: Array.from(buffer.values()), count: buffer.size });
+      // Quét lại DOM ngay trước khi trả: bài có thể vừa được render thêm.
+      let inline = 0;
+      try { inline = scanInline(); } catch (_) {}
+      sendResponse({
+        stories: Array.from(buffer.values()),
+        count: buffer.size,
+        inlineFound: inline,
+      });
     } else if (msg.cmd === 'FEED_SCROLL') {
       autoScroll(msg.rounds || 5, msg.pauseMs || 2000).then(() =>
         sendResponse({ ok: true, count: buffer.size })

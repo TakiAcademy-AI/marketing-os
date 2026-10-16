@@ -112,7 +112,33 @@ const VIDEO_VIEW_PATHS = [
   'video_view_count',
   'play_count',
   'counts.views',
+  // Đường thật của reel ở tab /reels (đo trên HTML production). Giá trị là
+  // chuỗi rút gọn "238K" nên firstInt không đọc được — xử riêng bên dưới.
+  'short_form_video_context.play_count',
 ];
+
+/** Lượt xem reel FB chỉ render dạng rút gọn "238K"/"1.2M". */
+const VIDEO_VIEW_COMPACT_PATHS = [
+  'short_form_video_context.play_count_reduced',
+  'play_count_reduced',
+];
+
+function compactInt(obj: unknown, paths: string[]): number {
+  for (const p of paths) {
+    const v = at(obj, p);
+    if (typeof v !== 'string') continue;
+    const m = v.trim().match(/^([\d.,]+)\s*([KkMmBb])?$/);
+    if (!m || m[1] === undefined) continue;
+    const n = parseFloat(m[1].replace(/,/g, ''));
+    if (!Number.isFinite(n)) continue;
+    const suf = (m[2] || '').toLowerCase();
+    if (suf === 'k') return Math.round(n * 1e3);
+    if (suf === 'm') return Math.round(n * 1e6);
+    if (suf === 'b') return Math.round(n * 1e9);
+    return Math.round(n);
+  }
+  return 0;
+}
 
 /**
  * Giờ đăng. Comet trả unix GIÂY — nhân 1000. Phân biệt với mili-giây bằng
@@ -137,6 +163,10 @@ function parsePublishedAt(raw: unknown): Date | null {
  *  post_type, nếu không query lọc `post_type IN ('reel','video')` đếm lệch. */
 function derivePostType(url: string | null, node: unknown): string {
   if (url?.includes('/reel/')) return 'reel';
+  // Node từ tab /reels có short_form_video_context. Xét cả cờ này chứ không
+  // chỉ URL: URL có thể thiếu ở surface khác, và gán nhầm thành 'status' sẽ
+  // làm query lọc `post_type IN ('reel','video')` đếm thiếu.
+  if (at(node, 'short_form_video_context') != null) return 'reel';
   if (url?.includes('/videos/')) return 'video';
   const attachType = firstStr(node, [
     'attachments.0.media.__typename',
@@ -198,7 +228,8 @@ export function mapExtensionPost(
       reach: 0,
       impressions: 0,
       clicks: 0,
-      video_views: firstInt(raw, VIDEO_VIEW_PATHS),
+      video_views:
+        firstInt(raw, VIDEO_VIEW_PATHS) || compactInt(raw, VIDEO_VIEW_COMPACT_PATHS),
     },
   };
 }
