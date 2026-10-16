@@ -25,6 +25,20 @@ RUN wget -qO /tmp/fb.tgz "https://github.com/tamnd/facebook-cli/releases/downloa
     grep "fb_${FB_CLI_VERSION}_linux_amd64.tar.gz\$" /tmp/checksums.txt | awk '{print $1"  /tmp/fb.tgz"}' | sha256sum -c - && \
     tar -xzf /tmp/fb.tgz -C /tmp fb && chmod +x /tmp/fb
 
+
+# Stage 2c: curl-impersonate — curl giả TLS fingerprint của Chrome.
+# Vì sao cần: Facebook chặn theo fingerprint TLS/IP datacenter. fb-cli (Go
+# HTTP client) bị phục vụ như khách vãng lai — đo được: session tier 1 hợp lệ
+# mà `fb feed` vẫn chỉ trả 1 bài trên MỌI page, kể cả `nasa`. curl-impersonate
+# bắt chước Chrome nên vượt được, và lấy được số follower CHÍNH XÁC từ
+# og:description (19,237 chứ không phải "19K" rút gọn).
+# Bản musl vì image chạy trên alpine.
+FROM alpine:3.20 AS curlimp
+ARG CURL_IMPERSONATE_VERSION=2.2.3
+RUN wget -qO /tmp/ci.tgz "https://github.com/lexiforest/curl-impersonate/releases/download/v${CURL_IMPERSONATE_VERSION}/curl-impersonate-v${CURL_IMPERSONATE_VERSION}.x86_64-linux-musl.tar.gz" && \
+    mkdir -p /tmp/ci && tar -xzf /tmp/ci.tgz -C /tmp/ci && \
+    chmod +x /tmp/ci/curl-impersonate /tmp/ci/curl_chrome131
+
 # Stage 3: Production runner
 FROM node:20-alpine AS runner
 WORKDIR /app
@@ -88,6 +102,13 @@ COPY --from=deps --chown=nextjs:nodejs /app/node_modules/node-cron ./node_module
 # FB_DATA_DIR = cache + session của fb, phải writable bởi nextjs (tạo bên dưới).
 COPY --from=fbcli /tmp/fb /usr/local/bin/fb
 ENV FB_DATA_DIR=/app/storage/fb-cli
+
+# curl-impersonate — quét trang Facebook công khai (lib/fb-scrape/curl-impersonate.ts).
+# Wrapper curl_chrome131 gọi ./curl-impersonate cạnh nó (dir=${0%/*}) nên hai
+# file phải nằm CÙNG thư mục, không symlink tách rời được.
+COPY --from=curlimp /tmp/ci/curl-impersonate /usr/local/lib/curl-impersonate/curl-impersonate
+COPY --from=curlimp /tmp/ci/curl_chrome131 /usr/local/lib/curl-impersonate/curl_chrome131
+ENV CURL_IMPERSONATE_BIN=/usr/local/lib/curl-impersonate/curl_chrome131
 
 # meta-ads-collector — quét Facebook Ads Library free (lib/news/meta-ads-cli.ts,
 # route /api/news/scan). Python CLI; curl_cffi có wheel musllinux nên không cần

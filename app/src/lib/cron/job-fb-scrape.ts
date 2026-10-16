@@ -25,11 +25,15 @@ import { getSettingOrEnv } from '@/lib/settings/api-keys';
 import { mapScrapedPost } from '@/lib/fb-scrape/map-scraped-post';
 import { startSyncLog, finishSyncLog } from '@/lib/cron/sync-log';
 import {
+  upsertAccountMetricDaily,
   upsertSocialPost,
   upsertPostMetricDaily,
+  type AccountMetricDailyRow,
   type PostMetricDailyRow,
   type SocialPostRow,
 } from '@/lib/cron/upsert-helpers';
+import { curlGet, curlImpersonateAvailable, pageUrl } from '@/lib/fb-scrape/curl-impersonate';
+import { parsePublicPageProfile } from '@/lib/fb-scrape/parse-public-page';
 
 interface ScrapeAccount {
   id: string;
@@ -56,6 +60,55 @@ async function loadScrapeAccounts(): Promise<ScrapeAccount[]> {
       ORDER BY name`
   );
   return res.rows;
+}
+
+
+/**
+ * Lấy số follower từ trang công khai bằng curl-impersonate và ghi vào
+ * account_metric_daily.
+ *
+ * Đây là thứ mở khoá engagement_rate: từ migration 065 mẫu số của ER là
+ * followers_snapshot, mà kênh mất quyền quản trị thì trước nay phải nhập tay.
+ * og:description trả số ĐẦY ĐỦ (19.238) chứ không phải "19K" rút gọn trong HTML.
+ *
+ * Không ném lỗi ra ngoài: hỏng bước này không được chặn việc quét bài.
+ * Gửi 0 cũng an toàn — upsertAccountMetricDaily dùng
+ * COALESCE(NULLIF(EXCLUDED.x,0), cũ) nên không đè giá trị tốt bằng 0.
+ */
+async function syncPublicFollowers(
+  accountId: string,
+  handle: string
+): Promise<number | null> {
+  if (!curlImpersonateAvailable()) return null;
+  try {
+    const html = await curlGet(pageUrl(handle));
+    const prof = parsePublicPageProfile(html);
+    if (!prof.followers) return null;
+
+    const row: AccountMetricDailyRow = {
+      account_id: accountId,
+      date: new Date(),
+      followers: prof.followers,
+      // Chỉ ghi follower. Các cột khác để 0 → upsert giữ nguyên giá trị cũ.
+      // Đặc biệt KHÔNG suy "talking about this" thành reach hay engagement:
+      // nó là chỉ dấu riêng của Facebook, gán bừa sẽ làm sai cả ER lẫn health.
+      follower_growth: 0,
+      total_reach: 0,
+      total_reach_unique: 0,
+      total_engagement: 0,
+      total_actions: 0,
+      page_views: 0,
+      post_reactions_total: 0,
+    };
+    await upsertAccountMetricDaily([row]);
+    return prof.followers;
+  } catch (err) {
+    console.warn(
+      `[job-fb-scrape] ${handle}: không lấy được follower công khai — ` +
+        `${err instanceof Error ? err.message : err}`
+    );
+    return null;
+  }
 }
 
 /**
@@ -160,10 +213,17 @@ export async function runFbScrapeJob(): Promise<void> {
 
     const logId = await startSyncLog('fb_scrape', acc.id);
     try {
+      // Follower đi đường curl-impersonate (ẩn danh, không đụng tài khoản nào)
+      // — độc lập với việc quét bài, nên chạy cả khi quét bài hỏng.
+      const followers = await syncPublicFollowers(acc.id, acc.fb_scrape_handle);
+      if (followers) {
+        console.log(`[job-fb-scrape] ${acc.name}: ${followers} follower (công khai)`);
+      }
+
       const count = await scrapeOneAccount(acc);
       totalRecords += count;
 
-      if (count === 0) {
+      if (count === 0 && !followers) {
         // KHÔNG cập nhật last_synced_at khi không lấy được gì — để kênh không
         // hiện ra "vừa đồng bộ" trong lúc thực chất đang rỗng. Đúng bài học từ
         // ca job-page-insights im lặng báo thành công với 0 dòng.
