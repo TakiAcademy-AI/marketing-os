@@ -245,11 +245,11 @@ export function LarkBaseForm({ marketing, order, larkAppConfigured }: Props) {
         <p>2. Lark Developer Console → Permissions → bật scope <code className="bg-zinc-200 px-1 rounded">bitable:app:readonly</code></p>
       </div>
 
-      <SlotForm slot="marketing" label="📊 Dashboard Marketing" {...marketing} disabled={!larkAppConfigured} />
-      <SlotForm slot="order"     label="📋 Dashboard Lark"        {...order}     disabled={!larkAppConfigured} />
+      <SlotForm slot="marketing" label="Dashboard Marketing" {...marketing} disabled={!larkAppConfigured} />
+      <SlotForm slot="order"     label="Dashboard Lark"        {...order}     disabled={!larkAppConfigured} />
 
-      <DashboardUrlSlot slot="marketing" label="📊 Link Dashboard Marketing (embed)" />
-      <DashboardUrlSlot slot="order"     label="📋 Link Dashboard Dashboard Lark (embed)" />
+      <DashboardUrlSlot slot="marketing" label="Link Dashboard Marketing (embed)" />
+      <DashboardUrlSlot slot="order"     label="Link Dashboard Lark (embed)" />
     </div>
   );
 }
@@ -281,7 +281,7 @@ function DashboardUrlSlot({ slot, label }: { slot: 'marketing' | 'order'; label:
   return (
     <div className="space-y-1.5 rounded-lg border border-zinc-100 p-4">
       <Label className="text-xs font-semibold text-zinc-700">{label}</Label>
-      <p className="text-xs text-zinc-400">
+      <p className="text-xs text-zinc-500">
         Dán URL Lark Wiki/Base có chứa Bảng điều khiển. Trang sẽ nhúng bằng iframe.
       </p>
       <div className="flex gap-2">

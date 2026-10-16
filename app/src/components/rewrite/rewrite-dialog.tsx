@@ -301,7 +301,7 @@ export function RewriteDialog({
                     )}
                   >
                     {opt.label}
-                    <span className="text-[10px] text-zinc-400 ml-1">({opt.hint})</span>
+                    <span className="text-[10px] text-zinc-500 ml-1">({opt.hint})</span>
                   </button>
                 ))}
               </div>
@@ -433,7 +433,7 @@ export function RewriteDialog({
                     <ImageIcon className="size-4 text-blue-500" />
                     Tạo ảnh minh hoạ
                   </span>
-                  <ChevronDownIcon className={cn('size-4 text-zinc-400 transition-transform', imgExpanded && 'rotate-180')} />
+                  <ChevronDownIcon className={cn('size-4 text-zinc-500 transition-transform', imgExpanded && 'rotate-180')} />
                 </button>
 
                 {imgExpanded && (
@@ -475,7 +475,7 @@ export function RewriteDialog({
                         placeholder="Mô tả ảnh bạn muốn tạo — đã điền từ nội dung, có thể chỉnh lại"
                         className="rounded border border-zinc-300 bg-white px-3 py-2 text-xs resize-y focus:outline-none focus:ring-2 focus:ring-blue-200"
                       />
-                      <p className="text-[10px] text-zinc-400">{imgPrompt.length}/4000 · GPT Image 2 qua 9Router</p>
+                      <p className="text-[10px] text-zinc-500">{imgPrompt.length}/4000 · GPT Image 2 qua 9Router</p>
                     </div>
 
                     {/* Generate button */}
@@ -483,7 +483,7 @@ export function RewriteDialog({
                       size="sm"
                       onClick={onGenerateImage}
                       disabled={imgGenerating || !imgPrompt.trim()}
-                      className="self-start bg-blue-600 hover:bg-blue-700 text-white"
+                      className="self-start bg-brand-gradient text-white hover:brightness-[1.05]"
                     >
                       {imgGenerating ? (
                         <><Loader2Icon className="size-3.5 animate-spin" /> Đang tạo ảnh...</>

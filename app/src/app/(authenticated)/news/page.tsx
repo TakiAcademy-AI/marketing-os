@@ -66,7 +66,7 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
           <p className="text-xs text-zinc-500">
             {NUMBER_FMT.format(total)} bài
             {totalPages > 1 && (
-              <span className="text-zinc-400"> · trang {page}/{totalPages}</span>
+              <span className="text-zinc-500"> · trang {page}/{totalPages}</span>
             )}
           </p>
           <NewsFetchNowButton />

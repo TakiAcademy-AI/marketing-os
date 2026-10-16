@@ -106,7 +106,7 @@ export function PerformanceTrendChart({ data, days }: PerformanceTrendChartProps
                   'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition-colors',
                   on
                     ? 'bg-zinc-50 text-zinc-700 ring-1 ring-zinc-200'
-                    : 'text-zinc-400 ring-1 ring-zinc-100 hover:bg-zinc-50'
+                    : 'text-zinc-500 ring-1 ring-zinc-100 hover:bg-zinc-50'
                 )}
                 aria-pressed={on}
               >
@@ -122,7 +122,7 @@ export function PerformanceTrendChart({ data, days }: PerformanceTrendChartProps
       </div>
 
       {data.length === 0 ? (
-        <div className="flex items-center justify-center h-64 text-sm text-zinc-400">
+        <div className="flex items-center justify-center h-64 text-sm text-zinc-500">
           Chưa có data trend
         </div>
       ) : (

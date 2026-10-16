@@ -39,7 +39,7 @@ export function LibraryPlatformTabs() {
 
   return (
     <div className="flex items-center gap-2 overflow-x-auto scrollbar-thin pb-1 -mb-1">
-      <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider shrink-0">
+      <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider shrink-0">
         Nền tảng
       </span>
       {TABS.map((tab) => {

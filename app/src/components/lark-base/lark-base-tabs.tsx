@@ -61,7 +61,7 @@ function SlotContent({ data, dashboardUrl, label }: { data: SlotData; dashboardU
       {/* Table data */}
       {view === 'table' && (
         !data.configured ? (
-          <div className="rounded-xl border border-dashed border-zinc-300 px-5 py-10 text-center text-sm text-zinc-400">
+          <div className="rounded-xl border border-dashed border-zinc-300 px-5 py-10 text-center text-sm text-zinc-500">
             {label} chưa được cấu hình.{' '}
             <a href="/settings/integrations" className="underline text-blue-500">Settings → Tích hợp</a>
           </div>
@@ -70,7 +70,7 @@ function SlotContent({ data, dashboardUrl, label }: { data: SlotData; dashboardU
             <strong>Lỗi:</strong> {data.error}
           </div>
         ) : data.records.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-zinc-300 px-5 py-10 text-center text-sm text-zinc-400">
+          <div className="rounded-xl border border-dashed border-zinc-300 px-5 py-10 text-center text-sm text-zinc-500">
             Bảng trống.
           </div>
         ) : (
@@ -91,8 +91,8 @@ export function LarkBaseTabs({ marketing, order, dashboardMktUrl, dashboardOrder
     <div className="flex flex-col gap-4">
       <div className="flex gap-1 border-b">
         {[
-          { key: 'marketing' as const, label: '📊 Dashboard Marketing' },
-          { key: 'order'     as const, label: '📋 Dashboard Lark' },
+          { key: 'marketing' as const, label: 'Dashboard Marketing' },
+          { key: 'order'     as const, label: 'Dashboard Lark' },
         ].map((t) => (
           <button
             key={t.key}

@@ -58,7 +58,7 @@ export function TeamMemberCard({ member, action }: TeamMemberCardProps) {
           <p className="truncate text-sm font-semibold text-zinc-900 leading-tight">
             {member.name}
           </p>
-          <p className="truncate text-[11px] text-zinc-400 mt-0.5">
+          <p className="truncate text-[11px] text-zinc-500 mt-0.5">
             {member.roleLabel}
           </p>
         </div>
@@ -140,14 +140,14 @@ function GoalsSection({ goals }: { goals: TeamMemberKpi['goals'] }) {
           Mục tiêu tháng
         </h4>
         {goals.numChannels > 0 && (
-          <span className="text-[10px] text-zinc-400">
+          <span className="text-[10px] text-zinc-500">
             {goals.numChannels} kênh
           </span>
         )}
       </div>
 
       {!hasAnyGoal ? (
-        <p className="text-xs text-zinc-400 italic">
+        <p className="text-xs text-zinc-500 italic">
           Chưa đặt mục tiêu. Admin bấm <strong>Mục tiêu</strong> ở góc phải để đặt.
         </p>
       ) : (
@@ -177,7 +177,7 @@ function GoalProgressRow({ goal }: { goal: GoalProgress }) {
     :                            'bg-rose-500';
 
   const labelColorClass =
-    goal.progressPct === null ? 'text-zinc-400'
+    goal.progressPct === null ? 'text-zinc-500'
     : goal.progressPct >= 100 ? 'text-emerald-700'
     : goal.progressPct >= 70  ? 'text-blue-700'
     : goal.progressPct >= 40  ? 'text-amber-700'

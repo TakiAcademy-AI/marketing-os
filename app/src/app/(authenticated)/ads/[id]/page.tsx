@@ -4,7 +4,7 @@
 
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, AlertCircleIcon, CheckCircle2Icon, DownloadIcon } from 'lucide-react';
+import { AlertCircleIcon, AlertTriangle, ArrowLeft, CheckCircle2Icon, DownloadIcon } from 'lucide-react';
 
 import { getCurrentUser } from '@/lib/auth/get-session';
 import {
@@ -230,7 +230,7 @@ export default async function AdAccountDetailPage({ params, searchParams }: Page
                 </h3>
                 {noConvCampaigns.length > 0 && (
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-100 text-rose-700 ring-1 ring-rose-200">
-                    🚨 {noConvCampaigns.length} chiến dịch thiếu conversion
+                    <AlertTriangle className="size-4 inline-block mr-1" aria-hidden /> {noConvCampaigns.length} chiến dịch thiếu conversion
                   </span>
                 )}
               </div>
@@ -286,7 +286,7 @@ export default async function AdAccountDetailPage({ params, searchParams }: Page
                                 </span>
                               )}
                             </div>
-                            <p className="text-[10px] text-zinc-400 font-mono mt-0.5">
+                            <p className="text-[10px] text-zinc-500 font-mono mt-0.5">
                               ID: {c.externalId}
                             </p>
                           </td>
@@ -317,17 +317,17 @@ export default async function AdAccountDetailPage({ params, searchParams }: Page
                                 {cpm !== null ? microsToDisplay(cpm, account.currency) : '—'}
                               </td>
                               <td className={cn('text-right px-3 py-2 tabular-nums font-semibold', isNoConv && 'text-rose-600')}>
-                                {isNoConv ? '0 🚨' : NUMBER_FMT.format(s.conversions)}
+                                {isNoConv ? '0' : NUMBER_FMT.format(s.conversions)}
                               </td>
                               <td className="text-right px-3 py-2 tabular-nums font-medium text-blue-700">
                                 {cpl !== null
                                   ? microsToDisplay(cpl, account.currency)
-                                  : <span className="text-zinc-400 font-normal">—</span>
+                                  : <span className="text-zinc-500 font-normal">—</span>
                                 }
                               </td>
                             </>
                           ) : (
-                            <td colSpan={7} className="px-3 py-2 text-center text-zinc-400 italic">
+                            <td colSpan={7} className="px-3 py-2 text-center text-zinc-500 italic">
                               Không có data {range.days}d
                             </td>
                           )}

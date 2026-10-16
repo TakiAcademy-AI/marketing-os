@@ -249,7 +249,7 @@ export function FacebookAppForm({
               <button
                 type="button"
                 onClick={() => setShowSecret((s) => !s)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-700"
                 title={showSecret ? 'Ẩn' : 'Hiện'}
               >
                 {showSecret ? <EyeOffIcon className="size-4" /> : <EyeIcon className="size-4" />}

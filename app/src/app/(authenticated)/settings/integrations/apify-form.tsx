@@ -291,7 +291,7 @@ export function ApifyForm({
                 />
               </div>
             </div>
-            <p className="text-[10px] text-zinc-400">
+            <p className="text-[10px] text-zinc-500">
               Lấy từ browser đã đăng nhập Facebook: DevTools → Application →
               Cookies → facebook.com → copy giá trị <code>c_user</code> và{' '}
               <code>xs</code>. Lưu encrypted trong DB, chỉ dùng để đọc.
@@ -379,7 +379,7 @@ export function ApifyForm({
                 className="font-mono text-xs h-8"
               />
             </div>
-            <p className="text-[10px] text-zinc-400 italic">
+            <p className="text-[10px] text-zinc-500 italic">
               Nếu actor khác → input shape có thể không khớp, cần check log{' '}
               /settings/dashboard-debug.
             </p>

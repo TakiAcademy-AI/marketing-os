@@ -103,7 +103,7 @@ export function SidebarNav({ user, role }: SidebarProps) {
               <Icon
                 className={cn(
                   'size-[18px] shrink-0 transition-colors',
-                  isActive ? 'text-brand-600' : 'text-zinc-400 group-hover:text-zinc-600'
+                  isActive ? 'text-brand-600' : 'text-zinc-500 group-hover:text-zinc-600'
                 )}
               />
               {label}
@@ -114,7 +114,7 @@ export function SidebarNav({ user, role }: SidebarProps) {
 
       <div className="px-2.5 pt-3 mt-3 border-t border-zinc-200/80 space-y-2">
         <UserMenu user={user} />
-        <p className="px-2 text-[11px] text-zinc-400">v1.0 · MVP</p>
+        <p className="px-2 text-[11px] text-zinc-500">v1.0 · MVP</p>
       </div>
     </aside>
   );

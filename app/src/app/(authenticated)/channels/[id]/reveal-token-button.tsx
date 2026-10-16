@@ -33,7 +33,7 @@ export function RevealTokenButton({ accountId }: { accountId: string }) {
     <span className="flex items-center gap-1 flex-wrap">
       <button
         onClick={load}
-        className="flex items-center gap-1 text-xs text-zinc-400 hover:text-zinc-600 transition-colors"
+        className="flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-600 transition-colors"
         title={visible ? 'Ẩn token' : 'Hiện token'}
       >
         {loading

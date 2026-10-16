@@ -34,7 +34,7 @@ export default async function ManualChannelPage() {
         </div>
       )}
 
-      <p className="text-center text-sm text-zinc-400">
+      <p className="text-center text-sm text-zinc-500">
         <Link href="/channels/new" className="hover:underline">← Quay lại chọn nền tảng</Link>
       </p>
     </div>

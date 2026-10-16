@@ -127,7 +127,7 @@ export default async function AdsConnectPage() {
             </>
           ) : (
             <>
-              <AlertCircleIcon className="size-4 text-zinc-400" />
+              <AlertCircleIcon className="size-4 text-zinc-500" />
               <span className="text-zinc-700">Chưa có Ad Account nào</span>
             </>
           )}
@@ -205,7 +205,7 @@ export default async function AdsConnectPage() {
           </Button>
         ) : (
           <a href="/api/auth/fb/connect?return_to=ads">
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+            <Button>
               <ZapIcon className="size-4" />
               Cấp quyền Facebook Ads
             </Button>
@@ -213,7 +213,7 @@ export default async function AdsConnectPage() {
         )}
       </div>
 
-      <p className="text-[11px] text-zinc-400 italic text-center mt-2">
+      <p className="text-[11px] text-zinc-500 italic text-center mt-2">
         Lưu ý: Meta cần approve scope <code>ads_read</code> trước khi end-users
         thường dùng được (1-3 tuần). Đến lúc đó, scope chỉ active với admin
         của app — tức bạn (creator). Khi Meta approve, team members khác cũng

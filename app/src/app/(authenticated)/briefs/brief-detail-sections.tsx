@@ -1,3 +1,4 @@
+import type { LucideIcon } from 'lucide-react';
 // Sub-section components cho brief detail view.
 // Mỗi section có header (emoji + uppercase label) + body.
 // Server component — pure render, không state.
@@ -10,14 +11,17 @@ import type {
 } from '@/lib/briefs/brief-types';
 
 interface SectionHeaderProps {
-  emoji: string;
+  /** Icon SVG (lucide) thay cho emoji: emoji render khác nhau theo hệ điều
+   *  hành, không đổi màu theo theme và không chỉnh được kích thước cho khớp
+   *  dòng chữ. */
+  icon: LucideIcon;
   label: string;
 }
 
-export function SectionHeader({ emoji, label }: SectionHeaderProps) {
+export function SectionHeader({ icon: Icon, label }: SectionHeaderProps) {
   return (
     <h4 className="flex items-center gap-2 text-xs font-bold tracking-wider uppercase text-zinc-700 mb-2">
-      <span>{emoji}</span>
+      <Icon className="size-3.5 text-zinc-400" aria-hidden />
       <span>{label}</span>
     </h4>
   );
@@ -97,7 +101,7 @@ export function ReferenceLinksList({ links }: ReferenceLinksListProps) {
     <ul className="space-y-1.5 text-sm">
       {links.map((link) => (
         <li key={link.id} className="flex gap-2 items-start">
-          <span className="text-zinc-400 shrink-0">·</span>
+          <span className="text-zinc-500 shrink-0">·</span>
           <a
             href={link.url}
             target="_blank"
@@ -140,7 +144,7 @@ export function AttachmentsList({ attachments }: AttachmentsListProps) {
           >
             {a.filename}
           </a>
-          <span className="text-xs text-zinc-400 font-mono shrink-0">
+          <span className="text-xs text-zinc-500 font-mono shrink-0">
             {formatBytes(a.size_bytes)}
           </span>
         </li>
@@ -159,7 +163,7 @@ export function BulletList({ items }: BulletListProps) {
     <ul className="space-y-1.5 text-sm text-zinc-700 leading-relaxed">
       {items.map((item, i) => (
         <li key={i} className="flex gap-2">
-          <span className="text-zinc-400">·</span>
+          <span className="text-zinc-500">·</span>
           <span className="flex-1">{item}</span>
         </li>
       ))}

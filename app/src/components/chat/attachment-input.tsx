@@ -184,7 +184,7 @@ export function AttachmentInput({
             />
           ))}
           {previews.length < maxFiles && (
-            <p className="text-[11px] text-zinc-400 self-end pb-1">
+            <p className="text-[11px] text-zinc-500 self-end pb-1">
               {previews.length}/{maxFiles} file
             </p>
           )}
@@ -281,7 +281,7 @@ function PreviewChip({
       <button
         type="button"
         onClick={onRemove}
-        className="text-zinc-400 hover:text-rose-600 ml-1 shrink-0"
+        className="text-zinc-500 hover:text-rose-600 ml-1 shrink-0"
         title="Xoá"
       >
         <XIcon className="size-3" />

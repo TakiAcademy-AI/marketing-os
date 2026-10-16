@@ -100,7 +100,7 @@ export function ManualChannelForm() {
         <div className="flex flex-col gap-1.5">
           <label htmlFor="m-scrape" className="text-xs font-medium text-zinc-700">
             Page Facebook để quét công khai{' '}
-            <span className="font-normal text-zinc-400">(không bắt buộc)</span>
+            <span className="font-normal text-zinc-500">(không bắt buộc)</span>
           </label>
           <input
             id="m-scrape"

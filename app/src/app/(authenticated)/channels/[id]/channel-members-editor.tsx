@@ -71,7 +71,7 @@ export function ChannelMembersEditor({
     <div className="flex flex-wrap items-center gap-1.5">
       {/* Display: chips inline */}
       {initialMembers.length === 0 ? (
-        <span className="text-sm italic text-zinc-400">Chưa gán</span>
+        <span className="text-sm italic text-zinc-500">Chưa gán</span>
       ) : (
         initialMembers.map((m) => <MemberChip key={m.memberId} member={m} />)
       )}
@@ -105,7 +105,7 @@ function MemberChip({ member }: { member: ChannelMember }) {
       {isPrimary && <CrownIcon className="size-3 text-blue-600 shrink-0" />}
       <span>{member.name}</span>
       {!isPrimary && (
-        <span className="text-[10px] text-zinc-400 uppercase tracking-wide">
+        <span className="text-[10px] text-zinc-500 uppercase tracking-wide">
           editor
         </span>
       )}
@@ -238,7 +238,7 @@ function EditMembersDialog({
         {/* Current members list */}
         <ul className="flex flex-col gap-1.5">
           {working.length === 0 && (
-            <li className="text-xs text-zinc-400 italic py-2 text-center">
+            <li className="text-xs text-zinc-500 italic py-2 text-center">
               Chưa có thành viên nào
             </li>
           )}
@@ -295,7 +295,7 @@ function EditMembersDialog({
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="h-6 w-6 p-0 text-zinc-400 hover:text-rose-600"
+                  className="h-6 w-6 p-0 text-zinc-500 hover:text-rose-600"
                   onClick={() => removeMember(m.memberId)}
                   title="Xoá khỏi kênh"
                 >
@@ -335,7 +335,7 @@ function EditMembersDialog({
                   {availableToAdd.map((m) => (
                     <SelectItem key={m.id} value={m.id}>
                       {m.name}{' '}
-                      <span className="text-xs text-zinc-400 ml-1">
+                      <span className="text-xs text-zinc-500 ml-1">
                         · {m.role}
                       </span>
                     </SelectItem>
@@ -345,7 +345,7 @@ function EditMembersDialog({
             )}
           </div>
         ) : (
-          <p className="text-[11px] italic text-zinc-400">
+          <p className="text-[11px] italic text-zinc-500">
             Đã add hết team. Tạo member mới ở trang /team trước.
           </p>
         )}

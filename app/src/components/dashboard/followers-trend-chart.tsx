@@ -190,7 +190,7 @@ export function FollowersTrendChart({ data, days }: Props) {
                   'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition-colors max-w-full',
                   on
                     ? 'bg-zinc-50 text-zinc-700 ring-1 ring-zinc-200'
-                    : 'text-zinc-400 ring-1 ring-zinc-100 hover:bg-zinc-50'
+                    : 'text-zinc-500 ring-1 ring-zinc-100 hover:bg-zinc-50'
                 )}
                 aria-pressed={on}
                 title={`${c.name} · ${formatLargeNumber(c.currentFollowers)} followers hiện tại`}
@@ -200,7 +200,7 @@ export function FollowersTrendChart({ data, days }: Props) {
                   style={{ backgroundColor: on ? color : '#D4D4D8' }}
                 />
                 <span className="truncate max-w-[140px]">{c.name}</span>
-                <span className="text-[10px] text-zinc-400 tabular-nums">
+                <span className="text-[10px] text-zinc-500 tabular-nums">
                   {formatLargeNumber(c.currentFollowers)}
                 </span>
               </button>
@@ -211,7 +211,7 @@ export function FollowersTrendChart({ data, days }: Props) {
 
       {/* Chart or empty */}
       {data.channels.length === 0 || chartData.length === 0 ? (
-        <div className="flex items-center justify-center h-64 text-sm text-zinc-400">
+        <div className="flex items-center justify-center h-64 text-sm text-zinc-500">
           Chưa có data follower — sync ít nhất 1 kênh để hiện chart
         </div>
       ) : (

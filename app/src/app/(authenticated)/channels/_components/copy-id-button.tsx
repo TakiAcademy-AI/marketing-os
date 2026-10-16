@@ -38,7 +38,7 @@ export function CopyIdButton({ value, className }: Props) {
       type="button"
       onClick={handleClick}
       className={cn(
-        'ml-1 inline-flex items-center justify-center rounded p-0.5 text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors',
+        'ml-1 inline-flex items-center justify-center rounded p-0.5 text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100 transition-colors',
         className
       )}
       aria-label={copied ? 'Đã copy' : 'Copy Page ID'}

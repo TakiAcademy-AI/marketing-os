@@ -18,10 +18,7 @@ export function AddMemberDialog() {
   return (
     <Dialog>
       <DialogTrigger
-        className={cn(
-          buttonVariants({ size: 'lg' }),
-          'bg-orange-500 text-white hover:bg-orange-600'
-        )}
+        className={cn(buttonVariants({ size: 'lg' }))}
       >
         + Thêm thành viên
       </DialogTrigger>

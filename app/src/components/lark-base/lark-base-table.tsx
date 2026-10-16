@@ -61,7 +61,7 @@ export function LarkBaseTable({ columns, records }: Props) {
           <tbody className="divide-y divide-zinc-100">
             {records.map((row, i) => (
               <tr key={row.record_id} className="hover:bg-zinc-50/50 transition-colors">
-                <td className="px-3 py-2 text-zinc-400">{i + 1}</td>
+                <td className="px-3 py-2 text-zinc-500">{i + 1}</td>
                 {columns.map((col) => (
                   <td
                     key={col}

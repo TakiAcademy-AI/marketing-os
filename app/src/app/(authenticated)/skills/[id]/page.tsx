@@ -97,8 +97,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
             <Link
               href={`/skills/${skill.id}/chat`}
               className={cn(
-                buttonVariants({ variant: 'default' }),
-                'bg-blue-600 hover:bg-blue-700 text-white'
+                buttonVariants({ variant: 'default' })
               )}
               title="Mở chat với skill này qua 9Router (Claude Max/ChatGPT Pro)"
             >

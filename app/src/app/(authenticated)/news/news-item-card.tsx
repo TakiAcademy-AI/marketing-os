@@ -46,7 +46,7 @@ function EngagementBadge({
   // null = nguồn không có engagement data (RSS, web clips) → ẩn hoàn toàn
   if (likesCount === null && sharesCount === null) return null;
   return (
-    <span className="flex items-center gap-1.5 shrink-0 text-[10px] text-zinc-400">
+    <span className="flex items-center gap-1.5 shrink-0 text-[10px] text-zinc-500">
       <span title="Likes">❤ {fmtCount(likesCount ?? 0)}</span>
       <span title="Shares">↻ {fmtCount(sharesCount ?? 0)}</span>
     </span>
@@ -146,7 +146,7 @@ export function NewsItemCard({ item }: NewsItemCardProps) {
           <h3 className="text-sm font-semibold text-zinc-900 leading-snug line-clamp-2 group-hover:text-blue-700 transition-colors">
             {item.title}
           </h3>
-          <ExternalLink className="size-3.5 shrink-0 text-zinc-400 group-hover:text-blue-600 mt-0.5" />
+          <ExternalLink className="size-3.5 shrink-0 text-zinc-500 group-hover:text-blue-600 mt-0.5" />
         </div>
 
         {item.excerpt && (

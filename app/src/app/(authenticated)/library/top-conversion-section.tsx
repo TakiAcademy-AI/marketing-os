@@ -218,7 +218,7 @@ function LeaderboardRow({
             loading="lazy"
           />
         ) : (
-          <div className="size-12 shrink-0 rounded-md bg-zinc-100 flex items-center justify-center text-zinc-400 text-[10px] font-medium">
+          <div className="size-12 shrink-0 rounded-md bg-zinc-100 flex items-center justify-center text-zinc-500 text-[10px] font-medium">
             IMG
           </div>
         )}
@@ -242,7 +242,7 @@ function LeaderboardRow({
               {post.accountName}
             </Link>
             {postedAgo && (
-              <span className="text-zinc-400">· {postedAgo}</span>
+              <span className="text-zinc-500">· {postedAgo}</span>
             )}
           </div>
 
@@ -267,7 +267,7 @@ function LeaderboardRow({
             </div>
 
             <span className="inline-flex items-center gap-1 text-xs font-semibold text-zinc-900 tabular-nums shrink-0">
-              <MousePointerClickIcon className="size-3 text-zinc-400" />
+              <MousePointerClickIcon className="size-3 text-zinc-500" />
               {formatCount(post.clicks)}
             </span>
 
@@ -288,7 +288,7 @@ function LeaderboardRow({
                 href={post.permalink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-zinc-400 hover:text-violet-600 shrink-0"
+                className="text-zinc-500 hover:text-violet-600 shrink-0"
                 title="Mở bài viết gốc"
               >
                 <ExternalLinkIcon className="size-3.5" />

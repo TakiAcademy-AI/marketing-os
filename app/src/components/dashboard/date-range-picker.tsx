@@ -123,7 +123,7 @@ export function DashboardDateRangePicker({
             required
             max={customTo || undefined}
           />
-          <span className="text-xs text-zinc-400">→</span>
+          <span className="text-xs text-zinc-500">→</span>
           <input
             type="date"
             value={customTo}

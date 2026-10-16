@@ -33,7 +33,7 @@ interface Props {
 const inputCls = 'h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 focus:border-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900/10 disabled:opacity-50';
 
 function ConversionBadge({ rate }: { rate: number | null }) {
-  if (rate === null) return <span className="text-zinc-400 text-xs">—</span>;
+  if (rate === null) return <span className="text-zinc-500 text-xs">—</span>;
   const cls =
     rate >= 3 ? 'bg-emerald-50 text-emerald-700 ring-emerald-200'
     : rate >= 1 ? 'bg-amber-50 text-amber-700 ring-amber-200'
@@ -110,31 +110,31 @@ function AddPageDialog({ onCreated }: { onCreated: () => void }) {
             <label className="text-xs font-medium text-zinc-700">Page path (GA4)</label>
             <input className={inputCls} value={pagePath} onChange={e => setPagePath(e.target.value)}
               placeholder="VD: / hoặc /san-pham/ai-power" required disabled={loading} />
-            <p className="text-[11px] text-zinc-400">Đúng theo path trong GA4 → Reports → Pages</p>
+            <p className="text-[11px] text-zinc-500">Đúng theo path trong GA4 → Reports → Pages</p>
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-zinc-700">GA4 Property ID</label>
             <input className={inputCls} value={propertyId} onChange={e => setPropertyId(e.target.value)}
               placeholder="VD: 498041843" required disabled={loading} inputMode="numeric" />
-            <p className="text-[11px] text-zinc-400">Số ở dưới tên domain trong Google Analytics → Quản trị → Chi tiết tài sản</p>
+            <p className="text-[11px] text-zinc-500">Số ở dưới tên domain trong Google Analytics → Quản trị → Chi tiết tài sản</p>
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-zinc-700">Google Sheet ID (lead)</label>
             <input className={inputCls} value={sheetId} onChange={e => setSheetId(e.target.value)}
               placeholder="VD: 1OdOFIYD6NRfMLp6PkpQGs4guJhg8WSrFe9noIWWaJPQ" disabled={loading} />
-            <p className="text-[11px] text-zinc-400">Phần ID trong URL: docs.google.com/spreadsheets/d/<strong>ID</strong>/edit</p>
+            <p className="text-[11px] text-zinc-500">Phần ID trong URL: docs.google.com/spreadsheets/d/<strong>ID</strong>/edit</p>
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-zinc-700">Tên tab trong Sheet</label>
             <input className={inputCls} value={sheetName} onChange={e => setSheetName(e.target.value)}
               placeholder="VD: Sheet1 hoặc DATA PHẾU 2025" disabled={loading} />
-            <p className="text-[11px] text-zinc-400">Đúng tên tab ở dưới cùng Google Sheet</p>
+            <p className="text-[11px] text-zinc-500">Đúng tên tab ở dưới cùng Google Sheet</p>
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-zinc-700">Lọc theo Nguồn (cột E)</label>
             <input className={inputCls} value={sourceFilter} onChange={e => setSourceFilter(e.target.value)}
               placeholder="VD: aiplus.vn" disabled={loading} />
-            <p className="text-[11px] text-zinc-400">Chỉ đếm dòng có cột Nguồn chứa giá trị này. Để trống = đếm tất cả.</p>
+            <p className="text-[11px] text-zinc-500">Chỉ đếm dòng có cột Nguồn chứa giá trị này. Để trống = đếm tất cả.</p>
           </div>
           {error && (
             <div className="rounded-lg border border-red-200 bg-red-50/60 px-3 py-2 text-xs text-red-700">{error}</div>
@@ -208,7 +208,7 @@ function EditPageDialog({ page, onSaved }: { page: LandingPage; onSaved: (update
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogTrigger className="text-zinc-400 hover:text-zinc-700 transition-colors p-1 rounded">
+      <DialogTrigger className="text-zinc-500 hover:text-zinc-700 transition-colors p-1 rounded">
         <PencilIcon className="size-3.5" />
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
@@ -231,19 +231,19 @@ function EditPageDialog({ page, onSaved }: { page: LandingPage; onSaved: (update
             </label>
             <input className={inputCls} value={sheetId} onChange={e => setSheetId(e.target.value)}
               placeholder="VD: 1OdOFIYD6NRfMLp6PkpQGs4guJhg8WSrFe9noIWWaJPQ" disabled={loading} />
-            <p className="text-[11px] text-zinc-400">Phần ID trong URL: docs.google.com/spreadsheets/d/<strong>ID</strong>/edit</p>
+            <p className="text-[11px] text-zinc-500">Phần ID trong URL: docs.google.com/spreadsheets/d/<strong>ID</strong>/edit</p>
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-zinc-700">Tên tab trong Sheet</label>
             <input className={inputCls} value={sheetName} onChange={e => setSheetName(e.target.value)}
               placeholder="VD: Sheet1 hoặc DATA PHẾU 2025" disabled={loading} />
-            <p className="text-[11px] text-zinc-400">Đúng tên tab ở dưới cùng Google Sheet</p>
+            <p className="text-[11px] text-zinc-500">Đúng tên tab ở dưới cùng Google Sheet</p>
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-zinc-700">Lọc theo Nguồn (cột E)</label>
             <input className={inputCls} value={sourceFilter} onChange={e => setSourceFilter(e.target.value)}
               placeholder="VD: aiplus.vn" disabled={loading} />
-            <p className="text-[11px] text-zinc-400">Chỉ đếm dòng có cột Nguồn chứa giá trị này. Để trống = đếm tất cả.</p>
+            <p className="text-[11px] text-zinc-500">Chỉ đếm dòng có cột Nguồn chứa giá trị này. Để trống = đếm tất cả.</p>
           </div>
           {error && (
             <div className="rounded-lg border border-red-200 bg-red-50/60 px-3 py-2 text-xs text-red-700">{error}</div>
@@ -348,7 +348,7 @@ export function LandingPagesClient({ initialPages }: Props) {
                 <tr key={p.id} className={cn('hover:bg-zinc-50/50', !p.isActive && 'opacity-50')}>
                   <td className="px-4 py-3">
                     <p className="font-medium text-zinc-900">{p.name}</p>
-                    <p className="text-[10px] text-zinc-400 font-mono mt-0.5">
+                    <p className="text-[10px] text-zinc-500 font-mono mt-0.5">
                       {p.pagePath} · prop {p.ga4PropertyId}
                     </p>
                     {p.sheetId && (
@@ -387,7 +387,7 @@ export function LandingPagesClient({ initialPages }: Props) {
                       />
                       <button
                         onClick={() => handleDelete(p.id, p.name)}
-                        className="text-zinc-400 hover:text-red-600 transition-colors p-1 rounded"
+                        className="text-zinc-500 hover:text-red-600 transition-colors p-1 rounded"
                       >
                         <Trash2Icon className="size-3.5" />
                       </button>
@@ -400,7 +400,7 @@ export function LandingPagesClient({ initialPages }: Props) {
         </div>
       )}
 
-      <p className="text-[11px] text-zinc-400 text-center">
+      <p className="text-[11px] text-zinc-500 text-center">
         Tỉ lệ % = Leads ÷ Sessions × 100 · Sync tự động lúc 00:30 VN mỗi ngày
       </p>
     </div>

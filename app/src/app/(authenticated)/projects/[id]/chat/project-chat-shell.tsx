@@ -275,7 +275,7 @@ export function ProjectChatShell({
 
         <div className="flex-1 overflow-y-auto p-2">
           {sessions.length === 0 ? (
-            <p className="text-xs text-zinc-400 italic text-center py-4">
+            <p className="text-xs text-zinc-500 italic text-center py-4">
               Chưa có cuộc trò chuyện
             </p>
           ) : (
@@ -307,7 +307,7 @@ export function ProjectChatShell({
                           <button
                             type="button"
                             onClick={(e) => handleDeleteSession(s.id, e)}
-                            className="opacity-0 group-hover:opacity-100 text-zinc-400 hover:text-rose-600 shrink-0"
+                            className="opacity-0 group-hover:opacity-100 text-zinc-500 hover:text-rose-600 shrink-0"
                             title="Xoá"
                           >
                             <Trash2Icon className="size-3" />
@@ -320,7 +320,7 @@ export function ProjectChatShell({
                         <span>{formatRelativeTime(s.updatedAt)}</span>
                       </div>
                       {s.totalTokensOut > 0 && (
-                        <div className="text-[10px] text-zinc-400 mt-0.5">
+                        <div className="text-[10px] text-zinc-500 mt-0.5">
                           {NUMBER_FMT.format(s.totalTokensIn)}↑ ·{' '}
                           {NUMBER_FMT.format(s.totalTokensOut)}↓ tokens
                         </div>
@@ -433,7 +433,7 @@ export function ProjectChatShell({
 
 function EmptyChat({ projectName }: { projectName: string }) {
   return (
-    <div className="flex flex-col items-center justify-center h-full text-center text-zinc-400 px-4">
+    <div className="flex flex-col items-center justify-center h-full text-center text-zinc-500 px-4">
       <MessageSquareIcon className="size-10 mb-3 text-zinc-300" />
       <p className="text-sm font-medium text-zinc-600">
         Chat với project &quot;{projectName}&quot;

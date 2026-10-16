@@ -1,5 +1,7 @@
 'use client';
 
+import { Search } from 'lucide-react';
+
 /**
  * Display test-token API result as DB-shaped preview tables.
  * Shows exactly what cron Job A + Job B would UPSERT into:
@@ -66,7 +68,7 @@ export function DbPreview({
       {diagnostics.metricStatus && diagnostics.metricStatus.length > 0 && (
         <details className="text-[11px]">
           <summary className="cursor-pointer text-emerald-700 hover:underline">
-            🔍 Page-level metrics ({diagnostics.metricStatus.filter((m) => m.ok).length}/
+            <Search className="size-3.5 inline-block mr-1 text-zinc-400" aria-hidden /> Page-level metrics ({diagnostics.metricStatus.filter((m) => m.ok).length}/
             {diagnostics.metricStatus.length} sống)
           </summary>
           <ul className="mt-1 pl-4 space-y-0.5 font-mono">
@@ -87,7 +89,7 @@ export function DbPreview({
       {diagnostics.postMetricStatus && diagnostics.postMetricStatus.length > 0 && (
         <details className="text-[11px]">
           <summary className="cursor-pointer text-emerald-700 hover:underline">
-            🔍 Post-level metrics ({diagnostics.postMetricStatus.filter((m) => m.ok).length}/
+            <Search className="size-3.5 inline-block mr-1 text-zinc-400" aria-hidden /> Post-level metrics ({diagnostics.postMetricStatus.filter((m) => m.ok).length}/
             {diagnostics.postMetricStatus.length} sống — probe trên post mới nhất)
           </summary>
           <ul className="mt-1 pl-4 space-y-0.5 font-mono">

@@ -10,13 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import {
-  BookOpenIcon,
-  CopyIcon,
-  CheckIcon,
-  ExternalLinkIcon,
-  ChevronRightIcon,
-} from 'lucide-react';
+import { AlertTriangle, BookOpenIcon, CheckIcon, ChevronRightIcon, CopyIcon, ExternalLinkIcon, Lightbulb } from 'lucide-react';
 
 /**
  * Popup hướng dẫn chi tiết cách lấy Page ID + Page Name + Page Access Token
@@ -167,7 +161,7 @@ export function FbTokenHelpDialog() {
                     → popup OAuth Facebook hiện ra
                   </div>
                   <div className="text-rose-900 mb-1.5">
-                    🚨 <strong>Bước hay bỏ sót:</strong> Popup show permissions
+                    <AlertTriangle className="size-4 inline-block mr-1 text-rose-500" aria-hidden /> <strong>Bước hay bỏ sót:</strong> Popup show permissions
                     theo NHÓM CHA. Phải tick 2 nhóm cha sau, sub-permission ở
                     Phần A mới được apply:
                   </div>
@@ -215,7 +209,7 @@ export function FbTokenHelpDialog() {
                 </p>
 
                 <div className="rounded-md bg-blue-50 border border-blue-200 px-2.5 py-1.5 text-xs text-blue-900">
-                  💡 Token vừa sinh nằm trong ô <strong>Access Token</strong>{' '}
+                  <Lightbulb className="size-4 inline-block mr-1 text-amber-500" aria-hidden /> Token vừa sinh nằm trong ô <strong>Access Token</strong>{' '}
                   phía trên — đây là <strong>User Token short-lived</strong>{' '}
                   (sống ~1-2 giờ). Bước 4 dùng nó để query{' '}
                   <code>/me/accounts</code>. Muốn token sống lâu/vĩnh viễn →
@@ -593,7 +587,7 @@ function LinkBox({ href }: { href: string }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center gap-1.5 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium px-2.5 py-1.5 transition-colors w-fit"
+      className="inline-flex items-center gap-1.5 rounded-md bg-brand-gradient text-white hover:brightness-[1.05] text-xs font-medium px-2.5 py-1.5 transition-colors w-fit"
     >
       Mở Graph API Explorer
       <ChevronRightIcon className="size-3.5" />
@@ -672,7 +666,7 @@ function FieldRow({
         )}
       >
         <span className="text-zinc-700">{desc}</span>
-        <span className="text-[10.5px] text-zinc-400 font-mono mt-0.5">
+        <span className="text-[10.5px] text-zinc-500 font-mono mt-0.5">
           VD: {example}
         </span>
       </div>
@@ -704,7 +698,7 @@ function Faq({
         <span>{question}</span>
         <ChevronRightIcon
           className={cn(
-            'size-3.5 text-zinc-400 transition-transform shrink-0',
+            'size-3.5 text-zinc-500 transition-transform shrink-0',
             open && 'rotate-90'
           )}
         />

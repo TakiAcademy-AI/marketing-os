@@ -70,8 +70,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
           <Link
             href={`/projects/${project.id}/chat`}
             className={cn(
-              buttonVariants({ variant: 'default' }),
-              'bg-blue-600 hover:bg-blue-700 text-white'
+              buttonVariants({ variant: 'default' })
             )}
           >
             <MessageSquareIcon className="size-4" />

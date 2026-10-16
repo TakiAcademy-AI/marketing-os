@@ -74,7 +74,7 @@ export function BriefContentEditor({
           <div className="flex flex-col gap-1.5">
             <div className="flex items-center justify-between">
               <Label htmlFor="brief-content">Nội dung</Label>
-              <span className="text-xs text-zinc-400 font-mono">
+              <span className="text-xs text-zinc-500 font-mono">
                 {content.length} ký tự
               </span>
             </div>

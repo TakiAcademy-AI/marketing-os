@@ -70,7 +70,7 @@ export function ActiveCampaignsList() {
       </div>
 
       {/* Column header — keeps numbers aligned with rows below */}
-      <div className="grid grid-cols-[1fr_56px_40px_72px] gap-2 px-1 pb-2 text-[10px] font-semibold uppercase tracking-wide text-zinc-400 border-b border-zinc-100">
+      <div className="grid grid-cols-[1fr_56px_40px_72px] gap-2 px-1 pb-2 text-[10px] font-semibold uppercase tracking-wide text-zinc-500 border-b border-zinc-100">
         <span>Campaign</span>
         <span className="text-right">Reach</span>
         <span className="text-right">Conv</span>
@@ -87,7 +87,7 @@ export function ActiveCampaignsList() {
               <p className="truncate text-xs font-semibold text-zinc-800 leading-tight">
                 {c.name}
               </p>
-              <p className="truncate text-[10px] text-zinc-400 mt-0.5">{c.meta}</p>
+              <p className="truncate text-[10px] text-zinc-500 mt-0.5">{c.meta}</p>
             </div>
             <span className="text-xs text-zinc-700 tabular-nums text-right">
               {formatNumber(c.reach)}

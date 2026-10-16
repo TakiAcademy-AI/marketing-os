@@ -68,7 +68,7 @@ export default async function ChannelsPage({ searchParams }: PageProps) {
         </div>
         {role !== 'guest' && (
           <Link href="/channels/new">
-            <Button className="bg-orange-500 hover:bg-orange-600 text-white">
+            <Button className="">
               + Onboard kênh mới
             </Button>
           </Link>

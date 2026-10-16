@@ -21,7 +21,7 @@ export function ChannelHealthGrid({ data }: ChannelHealthGridProps) {
       </div>
 
       {data.length === 0 ? (
-        <p className="text-sm text-zinc-400 py-8 text-center">
+        <p className="text-sm text-zinc-500 py-8 text-center">
           Chưa có data — chờ cron sync đầu tiên
         </p>
       ) : (

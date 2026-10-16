@@ -91,7 +91,7 @@ export function RevenueTable({ rows }: Props) {
                     )}
                   </div>
                 ) : (
-                  <span className="text-zinc-400">—</span>
+                  <span className="text-zinc-500">—</span>
                 )}
               </TableCell>
 

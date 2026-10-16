@@ -111,7 +111,7 @@ export function GenerateShell({ skillId, initialAssets }: Props) {
         <div className="px-4 py-3 border-b border-zinc-100 flex items-center gap-2">
           <ImageIcon className="size-4 text-pink-600" />
           <span className="text-sm font-semibold text-zinc-800">Tạo ảnh</span>
-          <span className="text-xs text-zinc-400 ml-auto">GPT Image 2 · 9Router</span>
+          <span className="text-xs text-zinc-500 ml-auto">GPT Image 2 · 9Router</span>
         </div>
 
         <div className="p-4 flex flex-col gap-4 flex-1 overflow-y-auto">
@@ -127,7 +127,7 @@ export function GenerateShell({ skillId, initialAssets }: Props) {
               placeholder="A cinematic photo of a Vietnamese street food vendor at golden hour, shallow depth of field, 35mm lens..."
               className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm leading-relaxed resize-y min-h-[120px] focus:outline-none focus:ring-2 focus:ring-pink-200"
             />
-            <p className="text-[11px] text-zinc-400">
+            <p className="text-[11px] text-zinc-500">
               Càng cụ thể càng tốt — mô tả chủ thể, ánh sáng, góc máy, phong cách.
             </p>
           </div>
@@ -208,7 +208,7 @@ export function GenerateShell({ skillId, initialAssets }: Props) {
               </div>
             </div>
           ) : (
-            <p className="text-center text-sm text-zinc-400 py-8">
+            <p className="text-center text-sm text-zinc-500 py-8">
               Nhập prompt bên trái và nhấn <strong>Tạo ảnh</strong>.
             </p>
           )}

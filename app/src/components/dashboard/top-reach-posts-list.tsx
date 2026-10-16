@@ -61,7 +61,7 @@ export function TopReachPostsList({ posts, days }: Props) {
 
       {posts.length === 0 ? (
         <div className="flex-1 flex items-center justify-center">
-          <p className="text-xs text-zinc-400 text-center">
+          <p className="text-xs text-zinc-500 text-center">
             Chưa có data reach cho bài viết trong {days} ngày qua.
             <br />
             Đợi cron sync hoặc onboard kênh mới.
@@ -78,7 +78,7 @@ export function TopReachPostsList({ posts, days }: Props) {
               >
                 {/* Row 1: rank + badge + reach + rewrite button */}
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold text-zinc-400 tabular-nums w-4 shrink-0">
+                  <span className="text-[10px] font-bold text-zinc-500 tabular-nums w-4 shrink-0">
                     #{idx + 1}
                   </span>
                   <span
@@ -105,7 +105,7 @@ export function TopReachPostsList({ posts, days }: Props) {
                 </p>
 
                 {/* Row 3: channel link + permalink */}
-                <div className="flex items-center justify-between gap-2 text-[10px] text-zinc-400">
+                <div className="flex items-center justify-between gap-2 text-[10px] text-zinc-500">
                   <Link
                     href={`/channels/${p.accountId}`}
                     className="truncate hover:text-blue-600 hover:underline"

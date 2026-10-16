@@ -67,7 +67,7 @@ function SuccessCard({ platform }: { platform: string }) {
         <div className="mt-6 flex flex-col gap-2">
           <Link
             href="/channels"
-            className="inline-flex items-center justify-center rounded-md bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 text-sm font-medium"
+            className="inline-flex items-center justify-center rounded-md bg-brand-gradient text-white hover:brightness-[1.05] px-4 py-2 text-sm font-medium"
           >
             Mở /channels
           </Link>
@@ -89,7 +89,7 @@ function ErrorCard({ title, message }: { title: string; message: string }) {
         <p className="mt-2 text-sm text-zinc-600">{message}</p>
         <Link
           href="/channels/new"
-          className="mt-6 inline-flex items-center justify-center rounded-md bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 text-sm font-medium"
+          className="mt-6 inline-flex items-center justify-center rounded-md bg-brand-gradient text-white hover:brightness-[1.05] px-4 py-2 text-sm font-medium"
         >
           Quay lại chọn nền tảng
         </Link>

@@ -202,7 +202,7 @@ export function OpenRouterKeyForm({
               <button
                 type="button"
                 onClick={() => setShowKey((s) => !s)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-700"
                 title={showKey ? 'Ẩn' : 'Hiện'}
               >
                 {showKey ? <EyeOffIcon className="size-4" /> : <EyeIcon className="size-4" />}
@@ -302,7 +302,7 @@ export function OpenRouterKeyForm({
             </div>
           ))}
         </div>
-        <p className="text-[10px] text-zinc-400 mt-2 italic">
+        <p className="text-[10px] text-zinc-500 mt-2 italic">
           Quota reset mỗi 5 giờ (Claude Max / ChatGPT Pro). Dashboard 9Router xem realtime usage.
         </p>
       </details>

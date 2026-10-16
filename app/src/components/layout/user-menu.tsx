@@ -49,13 +49,13 @@ export function UserMenu({ user }: Props) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className="flex items-center gap-2 w-full rounded-lg px-2 py-2 text-sm hover:bg-zinc-800 transition-colors outline-none"
+        className="flex cursor-pointer items-center gap-2 w-full rounded-xl px-2 py-2 text-sm hover:bg-zinc-100 transition-colors duration-200 outline-none"
         disabled={loggingOut}
       >
-        <span className="inline-flex size-7 items-center justify-center rounded-full bg-blue-600 text-xs font-semibold text-white shrink-0">
+        <span className="inline-flex size-7 items-center justify-center rounded-full bg-brand-gradient text-xs font-semibold text-white shrink-0">
           {initials}
         </span>
-        <span className="text-zinc-200 truncate flex-1 text-left">
+        <span className="text-zinc-700 font-medium truncate flex-1 text-left">
           {user.name || user.email}
         </span>
         <ChevronUp className="size-3.5 text-zinc-500 shrink-0" />
@@ -67,7 +67,7 @@ export function UserMenu({ user }: Props) {
           <DropdownMenuLabel>
             <div className="flex flex-col gap-0.5">
               <span className="font-medium text-zinc-900 text-sm">{user.name}</span>
-              <span className="text-xs text-zinc-400 font-normal">{user.email}</span>
+              <span className="text-xs text-zinc-500 font-normal">{user.email}</span>
             </div>
           </DropdownMenuLabel>
         </DropdownMenuGroup>

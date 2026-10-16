@@ -135,7 +135,7 @@ function TreeChildren({ nodes, depth, expanded, activePath, onToggle, onOpenFile
               ) : (
                 <>
                   <span className="w-3.5 shrink-0" />
-                  <File className="size-4 shrink-0 text-zinc-400" />
+                  <File className="size-4 shrink-0 text-zinc-500" />
                 </>
               )}
               <span className="truncate">{n.name}</span>
@@ -159,7 +159,7 @@ function TreeChildren({ nodes, depth, expanded, activePath, onToggle, onOpenFile
 
 function ViewerPlaceholder() {
   return (
-    <div className="h-full min-h-[20rem] flex items-center justify-center text-sm text-zinc-400">
+    <div className="h-full min-h-[20rem] flex items-center justify-center text-sm text-zinc-500">
       Chọn 1 file từ cây bên trái để xem nội dung
     </div>
   );

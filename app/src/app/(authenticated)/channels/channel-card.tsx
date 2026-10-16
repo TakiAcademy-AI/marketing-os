@@ -34,7 +34,7 @@ function formatPercent(rate: number | null): string {
 }
 
 function healthColor(score: number | null): string {
-  if (score === null) return 'text-zinc-400';
+  if (score === null) return 'text-zinc-500';
   if (score >= 80) return 'text-emerald-600';
   if (score >= 60) return 'text-amber-600';
   return 'text-red-600';
@@ -96,7 +96,7 @@ export function ChannelCard({ channel, isAdmin = false }: Props) {
             {channel.healthScore !== null ? channel.healthScore.toFixed(0) : '—'}
           </p>
           <div className="flex items-center justify-end gap-1 mt-1">
-            <p className="text-[10px] uppercase tracking-wide text-zinc-400">Health</p>
+            <p className="text-[10px] uppercase tracking-wide text-zinc-500">Health</p>
             <HealthTooltip />
           </div>
         </div>

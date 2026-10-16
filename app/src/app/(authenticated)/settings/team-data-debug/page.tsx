@@ -187,7 +187,7 @@ export default async function TeamDataDebugPage() {
                   >
                     {r.primary_member ?? 'CHƯA GÁN'}
                     {r.editor_count > 0 && (
-                      <span className="text-zinc-400"> (+{r.editor_count} editor)</span>
+                      <span className="text-zinc-500"> (+{r.editor_count} editor)</span>
                     )}
                   </td>
                   <td

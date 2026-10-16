@@ -117,7 +117,7 @@ export function CampaignTrendChart({ data, currency }: Props) {
                   'inline-flex items-center gap-1.5 px-2 py-1 rounded text-[11px] transition',
                   isOn
                     ? 'bg-zinc-100 text-zinc-900'
-                    : 'text-zinc-400 hover:text-zinc-600'
+                    : 'text-zinc-500 hover:text-zinc-600'
                 )}
               >
                 <span

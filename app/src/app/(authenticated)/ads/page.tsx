@@ -76,7 +76,7 @@ export default async function AdsPage({ searchParams }: AdsPageProps) {
           </p>
         </div>
         <Link href="/ads/connect">
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+          <Button>
             <PlugIcon className="size-4" />
             Kết nối Ad Account
           </Button>
@@ -213,12 +213,12 @@ function EmptyState() {
         động — chỉ cần authorize FB với scope <code>ads_read</code>.
       </p>
       <Link href="/ads/connect">
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+        <Button>
           <PlugIcon className="size-4" />
           Kết nối Facebook Ads
         </Button>
       </Link>
-      <p className="text-[11px] text-zinc-400 mt-4 italic max-w-md mx-auto">
+      <p className="text-[11px] text-zinc-500 mt-4 italic max-w-md mx-auto">
         Lưu ý: Meta cần approve scope <code>ads_read</code> (1-3 tuần). Trong
         thời gian chờ, app sẽ skip discover ad accounts. Sau khi approve,
         reconnect Facebook để app tự pick up.
@@ -392,7 +392,7 @@ function AccountCard({
 
       {/* Footer actions */}
       <div className="flex items-center justify-between gap-2 mt-auto pt-2 border-t border-zinc-100 text-xs">
-        <span className="text-zinc-400">
+        <span className="text-zinc-500">
           {account.lastSyncedAt
             ? `Sync ${formatRelative(account.lastSyncedAt)}`
             : 'Chưa sync'}

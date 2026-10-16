@@ -25,7 +25,7 @@ export default async function LoginPage() {
 
       <LoginForm />
 
-      <footer className="absolute bottom-6 left-0 right-0 text-center text-[11px] text-zinc-400">
+      <footer className="absolute bottom-6 left-0 right-0 text-center text-[11px] text-zinc-500">
         Marketing OS · v1.0
       </footer>
     </main>

@@ -103,7 +103,7 @@ export function DateRangePicker({ currentPreset, currentFrom, currentTo }: Props
             className="text-xs border-0 outline-none p-0 font-mono"
             required
           />
-          <span className="text-xs text-zinc-400">→</span>
+          <span className="text-xs text-zinc-500">→</span>
           <input
             type="date"
             value={customTo}

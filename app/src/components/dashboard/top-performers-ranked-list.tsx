@@ -29,7 +29,7 @@ export function TopPerformersRankedList({ performers, days }: Props) {
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-sm font-semibold text-zinc-700">Top Performers</h3>
-          <p className="text-[10px] text-zinc-400 mt-0.5">
+          <p className="text-[10px] text-zinc-500 mt-0.5">
             {days} ngày qua · score tương đối với top
           </p>
         </div>
@@ -40,7 +40,7 @@ export function TopPerformersRankedList({ performers, days }: Props) {
 
       {performers.length === 0 ? (
         <div className="flex-1 flex items-center justify-center">
-          <p className="text-xs text-zinc-400 italic text-center px-4">
+          <p className="text-xs text-zinc-500 italic text-center px-4">
             Chưa có thành viên nào đăng bài trong kỳ này.
           </p>
         </div>

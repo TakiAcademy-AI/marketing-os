@@ -41,7 +41,7 @@ function postsColor(posts: number, kpi: number): string {
 
 function GrowthCell({ value }: { value: number | null }) {
   if (value === null) {
-    return <span className="text-zinc-400">—</span>;
+    return <span className="text-zinc-500">—</span>;
   }
   const positive = value >= 0;
   const arrow = positive ? '↑' : '↓';
@@ -68,7 +68,7 @@ function FollowersCell({
   delta: number | null;
 }) {
   if (current === null) {
-    return <span className="text-zinc-400">—</span>;
+    return <span className="text-zinc-500">—</span>;
   }
 
   const showDelta = delta !== null && delta !== 0;
@@ -110,7 +110,7 @@ export function ChannelsTable({ data, days, tagTabs }: Props) {
       {tagTabs && <div className="px-5 pb-3">{tagTabs}</div>}
 
       {data.length === 0 ? (
-        <p className="text-sm text-zinc-400 py-8 text-center">
+        <p className="text-sm text-zinc-500 py-8 text-center">
           Chưa có data — chờ cron sync đầu tiên
         </p>
       ) : (
@@ -156,7 +156,7 @@ export function ChannelsTable({ data, days, tagTabs }: Props) {
                     {formatCompact(row.reach)}
                   </td>
                   <td className="px-3 py-3 text-right tabular-nums font-semibold text-zinc-800">
-                    {row.leads > 0 ? formatCompact(row.leads) : <span className="text-zinc-400 font-normal">—</span>}
+                    {row.leads > 0 ? formatCompact(row.leads) : <span className="text-zinc-500 font-normal">—</span>}
                   </td>
                   <td
                     className={cn(

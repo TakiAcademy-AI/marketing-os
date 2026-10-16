@@ -73,7 +73,7 @@ export function DeleteButton({
           type="button"
           onClick={onTriggerClick}
           aria-label={`Xoá ${skillName}`}
-          className="p-1.5 rounded-md text-zinc-400 hover:bg-red-100 hover:text-red-600 transition-colors"
+          className="p-1.5 rounded-md text-zinc-500 hover:bg-red-100 hover:text-red-600 transition-colors"
         >
           <Trash2 className="size-4" />
         </button>

@@ -70,7 +70,7 @@ export default async function NewChannelPage({ searchParams }: PageProps) {
 
       <ManualConnectForm />
 
-      <p className="text-center text-sm text-zinc-400">
+      <p className="text-center text-sm text-zinc-500">
         <Link href="/channels" className="hover:underline">
           ← Quay lại danh sách kênh
         </Link>

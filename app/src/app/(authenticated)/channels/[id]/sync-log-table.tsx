@@ -41,7 +41,7 @@ export function SyncLogTable({ entries }: Props) {
       <h2 className="text-base font-semibold text-zinc-900 mb-4">Lịch sử đồng bộ</h2>
 
       {entries.length === 0 ? (
-        <p className="text-sm text-zinc-400 text-center py-6">Chưa có lịch sử đồng bộ.</p>
+        <p className="text-sm text-zinc-500 text-center py-6">Chưa có lịch sử đồng bộ.</p>
       ) : (
         <div className="overflow-x-auto">
           <Table>

@@ -226,7 +226,7 @@ export default async function CampaignDetailPage({ params, searchParams }: PageP
                 pacing.status === 'unknown' && 'bg-zinc-50 text-zinc-600 ring-zinc-200'
               )}
             >
-              {pacing.status === 'over-pace' && '🚨 Over budget'}
+              {pacing.status === 'over-pace' && 'Over budget'}
               {pacing.status === 'under-pace' && '⏬ Under-pace'}
               {pacing.status === 'on-pace' && '✓ On pace'}
               {pacing.status === 'unknown' && 'No timeline'}
@@ -397,7 +397,7 @@ function DeltaBadge({
         {delta.deltaPct >= 0 ? '+' : ''}
         {delta.deltaPct.toFixed(1)}%
       </span>
-      <span className="text-zinc-400">vs trước</span>
+      <span className="text-zinc-500">vs trước</span>
     </div>
   );
 }

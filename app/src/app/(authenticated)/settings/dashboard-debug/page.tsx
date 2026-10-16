@@ -365,7 +365,7 @@ export default async function DashboardDebugPage() {
         </div>
       </section>
 
-      <p className="text-xs text-zinc-400">
+      <p className="text-xs text-zinc-500">
         Trang này KHÔNG cache (dynamic) — refresh trang sẽ chạy lại 3 query.
       </p>
     </div>

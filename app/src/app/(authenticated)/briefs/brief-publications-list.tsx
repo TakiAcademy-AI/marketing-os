@@ -56,10 +56,10 @@ export function BriefPublicationsList({ briefId, refetchKey }: BriefPublications
   }, [briefId, refetchKey]);
 
   if (loading && publications.length === 0) {
-    return <p className="text-xs text-zinc-400 italic">Đang tải…</p>;
+    return <p className="text-xs text-zinc-500 italic">Đang tải…</p>;
   }
   if (publications.length === 0) {
-    return <p className="text-xs text-zinc-400 italic">Chưa đăng lên kênh nào.</p>;
+    return <p className="text-xs text-zinc-500 italic">Chưa đăng lên kênh nào.</p>;
   }
 
   return (
@@ -80,7 +80,7 @@ export function BriefPublicationsList({ briefId, refetchKey }: BriefPublications
               <p className="text-zinc-800 truncate">
                 {p.channel_name}
                 {p.published_by_name && (
-                  <span className="text-zinc-400"> · {p.published_by_name}</span>
+                  <span className="text-zinc-500"> · {p.published_by_name}</span>
                 )}
               </p>
               {p.status === 'failed' && p.error_message && (
@@ -89,7 +89,7 @@ export function BriefPublicationsList({ briefId, refetchKey }: BriefPublications
                 </p>
               )}
             </div>
-            <span className="text-xs text-zinc-400 font-mono shrink-0">
+            <span className="text-xs text-zinc-500 font-mono shrink-0">
               {formatTime(p.published_at ?? p.created_at)}
             </span>
             {p.permalink_url && (

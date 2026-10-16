@@ -57,7 +57,7 @@ export function BundleConnectPanel({ connectUrl, platformLabel, expiresAt, onClo
           type="button"
           onClick={onClose}
           aria-label="Đóng"
-          className="text-zinc-400 hover:text-zinc-600 -mt-1 -mr-1 p-1"
+          className="text-zinc-500 hover:text-zinc-600 -mt-1 -mr-1 p-1"
         >
           ✕
         </button>
@@ -81,7 +81,7 @@ export function BundleConnectPanel({ connectUrl, platformLabel, expiresAt, onClo
         </Button>
         <a
           href={connectUrl}
-          className="inline-flex items-center justify-center rounded-md bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 text-sm font-medium transition-colors"
+          className="inline-flex items-center justify-center rounded-md bg-brand-gradient text-white hover:brightness-[1.05] px-4 py-2 text-sm font-medium transition-colors"
         >
           Mở link →
         </a>

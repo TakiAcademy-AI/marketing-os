@@ -64,7 +64,7 @@ export function NewsPagination({ page, totalPages }: Props) {
 
       {items.map((it, i) =>
         it === 'ellipsis' ? (
-          <span key={`e${i}`} className="px-1 text-zinc-400 select-none">
+          <span key={`e${i}`} className="px-1 text-zinc-500 select-none">
             …
           </span>
         ) : (

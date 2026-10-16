@@ -53,7 +53,7 @@ export function DeleteMemberButton({ id, name }: Props) {
       className={
         confirmed
           ? 'inline-flex items-center gap-1 text-[10px] font-semibold text-red-600 hover:text-red-800 disabled:opacity-50'
-          : 'inline-flex items-center text-zinc-400 hover:text-red-600 disabled:opacity-50'
+          : 'inline-flex items-center text-zinc-500 hover:text-red-600 disabled:opacity-50'
       }
       title={confirmed ? `Bấm lần nữa để xoá ${name}` : `Xoá ${name}`}
     >

@@ -32,7 +32,7 @@ export function BriefInboxList({
 
       {/* List — divider giữa các item, không cần border riêng cho từng item */}
       {briefs.length === 0 ? (
-        <p className="text-xs text-zinc-400 text-center py-8 italic">
+        <p className="text-xs text-zinc-500 text-center py-8 italic">
           Chưa có brief nào.
         </p>
       ) : (

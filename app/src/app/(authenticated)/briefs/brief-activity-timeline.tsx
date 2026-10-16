@@ -85,13 +85,13 @@ export function BriefActivityTimeline({ briefId, refetchKey }: BriefActivityTime
   }, [briefId, refetchKey]);
 
   if (loading) {
-    return <p className="text-xs text-zinc-400 italic">Đang tải lịch sử…</p>;
+    return <p className="text-xs text-zinc-500 italic">Đang tải lịch sử…</p>;
   }
   if (error) {
     return <p className="text-xs text-rose-600">⚠️ {error}</p>;
   }
   if (activities.length === 0) {
-    return <p className="text-xs text-zinc-400 italic">Chưa có hoạt động nào.</p>;
+    return <p className="text-xs text-zinc-500 italic">Chưa có hoạt động nào.</p>;
   }
 
   return (
@@ -101,7 +101,7 @@ export function BriefActivityTimeline({ briefId, refetchKey }: BriefActivityTime
           <span className={`mt-1.5 size-2 shrink-0 rounded-full ${ACTION_DOT_COLOR[a.action]}`} />
           <div className="flex-1 min-w-0">
             <p className="text-zinc-700">{describe(a)}</p>
-            <p className="text-xs text-zinc-400 font-mono">{formatTime(a.created_at)}</p>
+            <p className="text-xs text-zinc-500 font-mono">{formatTime(a.created_at)}</p>
           </div>
         </li>
       ))}

@@ -236,7 +236,7 @@ export function BriefFormDialog({
               </Button>
             </div>
             {links.length === 0 ? (
-              <p className="text-xs text-zinc-400 italic">Chưa có link nào.</p>
+              <p className="text-xs text-zinc-500 italic">Chưa có link nào.</p>
             ) : (
               <div className="flex flex-col gap-2">
                 {links.map((link) => (
@@ -282,7 +282,7 @@ export function BriefFormDialog({
                     <button
                       type="button"
                       onClick={() => handleRemoveAttachment(a.id)}
-                      className="text-zinc-400 hover:text-rose-600"
+                      className="text-zinc-500 hover:text-rose-600"
                     >
                       <X className="size-3" />
                     </button>

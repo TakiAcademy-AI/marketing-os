@@ -6,7 +6,7 @@ import type { DashboardLandingPage } from '@/lib/queries/dashboard-landing-pages
 const NUMBER_FMT = new Intl.NumberFormat('vi-VN');
 
 function rateColor(rate: number | null): string {
-  if (rate === null) return 'text-zinc-400';
+  if (rate === null) return 'text-zinc-500';
   if (rate >= 15) return 'text-emerald-700 bg-emerald-50 ring-emerald-200';
   if (rate >= 8)  return 'text-teal-700 bg-teal-50 ring-teal-200';
   if (rate >= 3)  return 'text-amber-700 bg-amber-50 ring-amber-200';
@@ -32,7 +32,7 @@ export function LandingPagesTable({ data }: Props) {
       </div>
 
       {data.length === 0 ? (
-        <p className="text-xs text-zinc-400 italic px-4 py-6 text-center">
+        <p className="text-xs text-zinc-500 italic px-4 py-6 text-center">
           Chưa có landing page nào. Vào <strong>Landing Pages</strong> để thêm.
         </p>
       ) : (
@@ -52,7 +52,7 @@ export function LandingPagesTable({ data }: Props) {
                 <tr key={lp.id} className="hover:bg-zinc-50/50">
                   <td className="px-4 py-2.5">
                     <p className="font-medium text-zinc-900 truncate max-w-[180px]">{lp.name}</p>
-                    <p className="text-[10px] text-zinc-400 mt-0.5 truncate max-w-[180px]">
+                    <p className="text-[10px] text-zinc-500 mt-0.5 truncate max-w-[180px]">
                       {lp.pagePath} · prop {lp.ga4PropertyId}
                     </p>
                     {lp.sheetName && (
@@ -71,7 +71,7 @@ export function LandingPagesTable({ data }: Props) {
                         {lp.conversionRate.toFixed(2)}%
                       </span>
                     ) : (
-                      <span className="text-zinc-400">—</span>
+                      <span className="text-zinc-500">—</span>
                     )}
                   </td>
                   <td className="text-center px-3 py-2.5">

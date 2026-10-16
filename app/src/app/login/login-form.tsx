@@ -77,7 +77,7 @@ export function LoginForm() {
             Email
           </label>
           <div className="relative">
-            <Mail className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-zinc-400" />
+            <Mail className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-zinc-500" />
             <input
               id="email"
               type="email"
@@ -87,7 +87,7 @@ export function LoginForm() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="bạn@công-ty.com"
               disabled={loading}
-              className="h-10 w-full rounded-lg border border-zinc-200 bg-white pl-9 pr-3 text-sm text-zinc-900 placeholder:text-zinc-400 transition-colors focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500/15 disabled:opacity-50"
+              className="h-10 w-full rounded-lg border border-zinc-200 bg-white pl-9 pr-3 text-sm text-zinc-900 placeholder:text-zinc-500 transition-colors focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500/15 disabled:opacity-50"
             />
           </div>
         </div>
@@ -101,7 +101,7 @@ export function LoginForm() {
             Mật khẩu
           </label>
           <div className="relative">
-            <Lock className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-zinc-400" />
+            <Lock className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-zinc-500" />
             <input
               id="password"
               type="password"
@@ -111,7 +111,7 @@ export function LoginForm() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               disabled={loading}
-              className="h-10 w-full rounded-lg border border-zinc-200 bg-white pl-9 pr-3 text-sm text-zinc-900 placeholder:text-zinc-400 transition-colors focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500/15 disabled:opacity-50"
+              className="h-10 w-full rounded-lg border border-zinc-200 bg-white pl-9 pr-3 text-sm text-zinc-900 placeholder:text-zinc-500 transition-colors focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500/15 disabled:opacity-50"
             />
           </div>
         </div>
@@ -138,7 +138,7 @@ export function LoginForm() {
       </form>
 
       {/* Microcopy — soft, not pushy */}
-      <p className="mt-8 text-[11px] leading-relaxed text-zinc-400">
+      <p className="mt-8 text-[11px] leading-relaxed text-zinc-500">
         Chỉ admin được cấp tài khoản tạo thêm thành viên.
         <br />
         Quên mật khẩu? Liên hệ quản trị viên để reset.

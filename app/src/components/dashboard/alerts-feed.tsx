@@ -66,7 +66,7 @@ export function AlertsFeed({ initialData }: AlertsFeedProps) {
       </div>
 
       {alerts.length === 0 ? (
-        <p className="text-sm text-zinc-400 py-8 text-center">
+        <p className="text-sm text-zinc-500 py-8 text-center">
           Không có cảnh báo chưa đọc
         </p>
       ) : (
@@ -88,7 +88,7 @@ export function AlertsFeed({ initialData }: AlertsFeedProps) {
                   <p className="text-[11px] text-zinc-500 mt-0.5 leading-snug">
                     {alert.message}
                   </p>
-                  <p className="text-[10px] text-zinc-400 mt-1">
+                  <p className="text-[10px] text-zinc-500 mt-1">
                     {formatDistanceToNow(new Date(alert.createdAt), {
                       addSuffix: true,
                       locale: vi,
@@ -98,7 +98,7 @@ export function AlertsFeed({ initialData }: AlertsFeedProps) {
                 <button
                   onClick={() => handleMarkRead(alert.id)}
                   disabled={isProcessing}
-                  className="shrink-0 rounded-md px-2 py-1 text-[10px] font-medium text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 transition-colors disabled:pointer-events-none"
+                  className="shrink-0 rounded-md px-2 py-1 text-[10px] font-medium text-zinc-500 hover:bg-zinc-100 hover:text-zinc-600 transition-colors disabled:pointer-events-none"
                   aria-label="Đánh dấu đã đọc"
                 >
                   ✕

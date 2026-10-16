@@ -118,7 +118,7 @@ export function PostCard({ post }: PostCardProps) {
       <div className="flex flex-col gap-2.5 p-3 flex-1">
         {/* Content preview */}
         <p className="text-sm text-zinc-800 font-medium line-clamp-2 leading-snug min-h-[2.5rem]">
-          {post.content ?? <span className="text-zinc-400 italic font-normal">Không có nội dung</span>}
+          {post.content ?? <span className="text-zinc-500 italic font-normal">Không có nội dung</span>}
         </p>
 
         {/* Engagement row — view / like / comment / share */}
@@ -134,7 +134,7 @@ export function PostCard({ post }: PostCardProps) {
             <Eye className="size-3" />
             {formatCompact(views)}
             {isUniqueViews && (
-              <span className="text-[9px] text-zinc-400 italic">(unique)</span>
+              <span className="text-[9px] text-zinc-500 italic">(unique)</span>
             )}
           </span>
           <span className="inline-flex items-center gap-1">

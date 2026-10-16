@@ -84,7 +84,7 @@ export function GoogleAnalyticsForm({
     <div className="rounded-xl bg-white ring-1 ring-zinc-200 p-5 flex flex-col gap-4">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2">
-          <KeyRoundIcon className="size-4 text-zinc-400 shrink-0" />
+          <KeyRoundIcon className="size-4 text-zinc-500 shrink-0" />
           <div>
             <h3 className="text-sm font-semibold text-zinc-900">Google Analytics 4</h3>
             <p className="text-xs text-zinc-500 mt-0.5">
@@ -153,7 +153,7 @@ export function GoogleAnalyticsForm({
             <button
               type="button"
               onClick={() => setShowSecret(v => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-600"
             >
               {showSecret ? <EyeOffIcon className="size-4" /> : <EyeIcon className="size-4" />}
             </button>
@@ -196,7 +196,7 @@ export function GoogleAnalyticsForm({
         </div>
       </form>
 
-      <p className="text-[11px] text-zinc-400">
+      <p className="text-[11px] text-zinc-500">
         Lấy credentials tại Google Cloud Console → APIs & Services → Credentials → OAuth 2.0 Client IDs.
         Redirect URI cần set: <code className="font-mono bg-zinc-100 px-1 rounded">https://mkt.taki.vn/api/integrations/google/callback</code>
       </p>

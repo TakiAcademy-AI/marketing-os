@@ -61,7 +61,7 @@ export function MetricsTrendChart({ data }: Props) {
         <p className="text-xs text-zinc-500 mb-4">
           Tổng followers (snapshot hiện tại) · Reach (lượt tiếp cận) · Bài đăng đăng trong ngày
         </p>
-        <p className="text-sm text-zinc-400 text-center py-8">Chưa có dữ liệu metrics.</p>
+        <p className="text-sm text-zinc-500 text-center py-8">Chưa có dữ liệu metrics.</p>
       </div>
     );
   }

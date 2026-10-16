@@ -41,7 +41,7 @@ export function HealthTooltip({ className }: Props) {
           e.stopPropagation();
         }}
         className={cn(
-          'inline-flex items-center justify-center rounded-full text-zinc-400 hover:text-zinc-600 cursor-help',
+          'inline-flex items-center justify-center rounded-full text-zinc-500 hover:text-zinc-600 cursor-help',
           className
         )}
         aria-label="Công thức tính Health Score"
@@ -54,13 +54,13 @@ export function HealthTooltip({ className }: Props) {
           {SUB_SCORES.map((s) => (
             <li key={s.label} className="flex items-baseline justify-between gap-3">
               <span className="text-zinc-100">{s.label}</span>
-              <span className="text-zinc-400 text-[10px] tabular-nums whitespace-nowrap">
+              <span className="text-zinc-500 text-[10px] tabular-nums whitespace-nowrap">
                 {s.weight} · {s.benchmark}
               </span>
             </li>
           ))}
         </ul>
-        <p className="mt-2 pt-2 border-t border-zinc-700 text-[10px] text-zinc-400">
+        <p className="mt-2 pt-2 border-t border-zinc-700 text-[10px] text-zinc-500">
           Trung bình 30 ngày · Recompute 03:00 hàng ngày
         </p>
       </TooltipContent>

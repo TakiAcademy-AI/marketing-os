@@ -92,7 +92,7 @@ export function PersonaPanel({ accountId, personaJson }: Props) {
           {JSON.stringify(personaJson, null, 2)}
         </pre>
       ) : (
-        <p className="text-sm text-zinc-400 italic">Chưa có persona. Nhấn "Sửa persona" để thêm.</p>
+        <p className="text-sm text-zinc-500 italic">Chưa có persona. Nhấn "Sửa persona" để thêm.</p>
       )}
 
       <Dialog open={open} onOpenChange={setOpen}>

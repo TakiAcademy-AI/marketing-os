@@ -124,7 +124,7 @@ export function ChannelTagsEditor({
       )}
 
       {isAdmin && allTags.length > 0 && (
-        <p className="mt-2 text-xs text-zinc-400">
+        <p className="mt-2 text-xs text-zinc-500">
           Click chip để bật/tắt. Dashboard tab tương ứng sẽ refresh sau khi lưu.
         </p>
       )}

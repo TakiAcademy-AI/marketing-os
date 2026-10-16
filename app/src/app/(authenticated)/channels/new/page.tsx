@@ -70,7 +70,7 @@ export default async function ChannelsNewPage() {
         </Link>
       </section>
 
-      <p className="text-center text-sm text-zinc-400 pt-2">
+      <p className="text-center text-sm text-zinc-500 pt-2">
         <Link href="/channels" className="hover:underline">
           ← Quay lại danh sách kênh
         </Link>

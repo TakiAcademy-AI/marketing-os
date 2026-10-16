@@ -79,7 +79,7 @@ export function ResetPasswordDialog({ id, name }: Props) {
           <button
             type="button"
             title={`Reset mật khẩu cho ${name}`}
-            className="inline-flex items-center text-zinc-400 hover:text-blue-600"
+            className="inline-flex items-center text-zinc-500 hover:text-blue-600"
           >
             <KeyRound className="size-3.5" />
           </button>

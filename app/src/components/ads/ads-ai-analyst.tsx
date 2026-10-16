@@ -136,7 +136,7 @@ export function AdsAiAnalyst({ endpoint, queryString }: AdsAiAnalystProps) {
     setError(null);
   }
 
-  const inputCls = 'h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/15';
+  const inputCls = 'h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 placeholder:text-zinc-500 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/15';
 
   return (
     <div className="flex flex-col gap-3">
@@ -199,7 +199,7 @@ export function AdsAiAnalyst({ endpoint, queryString }: AdsAiAnalystProps) {
                     onChange={(e) => { setCustomFrom(e.target.value); setRangeError(null); }}
                     className="h-8 rounded-md border border-zinc-200 px-2 text-xs text-zinc-900 focus:border-violet-500 focus:outline-none"
                   />
-                  <span className="text-xs text-zinc-400">→</span>
+                  <span className="text-xs text-zinc-500">→</span>
                   <input
                     type="date"
                     value={customTo}
@@ -250,7 +250,7 @@ export function AdsAiAnalyst({ endpoint, queryString }: AdsAiAnalystProps) {
                   />
                   <button
                     onClick={() => removeProduct(p.id)}
-                    className="p-1.5 rounded text-zinc-400 hover:text-red-500 hover:bg-red-50 disabled:opacity-30"
+                    className="p-1.5 rounded text-zinc-500 hover:text-red-500 hover:bg-red-50 disabled:opacity-30"
                     disabled={products.length === 1}
                   >
                     <Trash2Icon className="size-4" />

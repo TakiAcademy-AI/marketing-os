@@ -96,7 +96,7 @@ export function EditMemberDialog({
           <button
             type="button"
             title={`Sửa thông tin ${initialName}`}
-            className="inline-flex items-center text-zinc-400 hover:text-blue-600"
+            className="inline-flex items-center text-zinc-500 hover:text-blue-600"
           >
             <Pencil className="size-3.5" />
           </button>

@@ -77,7 +77,7 @@ export function MessagesTrendChart({ data }: Props) {
         <p className="text-xs text-zinc-500 mb-4">
           Tin nhắn khách · Page trả lời · Thời gian phản hồi · Hội thoại chưa trả lời
         </p>
-        <p className="text-sm text-zinc-400 text-center py-8">
+        <p className="text-sm text-zinc-500 text-center py-8">
           Chưa có dữ liệu tin nhắn (cần token <code>pages_messaging</code> + chờ cron Job J).
         </p>
       </div>

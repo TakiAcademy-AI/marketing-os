@@ -165,7 +165,7 @@ export function ChannelHeader({
 
           {/* Row 2b: Token (admin + facebook only) */}
           {isAdmin && platform === 'facebook' && !isManual && (
-            <div className="flex items-center gap-1 text-xs text-zinc-400">
+            <div className="flex items-center gap-1 text-xs text-zinc-500">
               <span className="font-sans">Token:</span>
               <RevealTokenButton accountId={accountId} />
             </div>

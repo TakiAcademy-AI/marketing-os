@@ -122,7 +122,7 @@ export function BriefPublishDialog({
           <div>
             <p className="text-sm font-medium text-zinc-900 mb-2">Chọn kênh</p>
             {loadingChannels ? (
-              <p className="text-sm text-zinc-400 italic">Đang tải kênh…</p>
+              <p className="text-sm text-zinc-500 italic">Đang tải kênh…</p>
             ) : channels.length === 0 ? (
               <p className="text-sm text-zinc-500">
                 Chưa có Facebook Page nào đủ điều kiện. Kết nối Page ở trang

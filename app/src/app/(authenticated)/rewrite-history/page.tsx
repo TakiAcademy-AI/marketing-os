@@ -166,7 +166,7 @@ export default async function RewriteHistoryPage() {
                         <>
                           <div>{row.sourceType === 'news' ? 'Tin tức' : 'Thư viện'}</div>
                           {row.sourceContext && (
-                            <div className="text-zinc-400 truncate max-w-[140px]">{row.sourceContext}</div>
+                            <div className="text-zinc-500 truncate max-w-[140px]">{row.sourceContext}</div>
                           )}
                         </>
                       )}
@@ -178,7 +178,7 @@ export default async function RewriteHistoryPage() {
                       {row.tone || row.length ? (
                         <>
                           {TONE_LABEL[row.tone ?? ''] ?? row.tone ?? '—'}
-                          <span className="text-zinc-400 mx-1">·</span>
+                          <span className="text-zinc-500 mx-1">·</span>
                           {LENGTH_LABEL[row.length ?? ''] ?? row.length ?? '—'}
                         </>
                       ) : (
@@ -190,7 +190,7 @@ export default async function RewriteHistoryPage() {
                       <span className="text-zinc-300 mx-1">·</span>
                       {row.tokensOut.toLocaleString('vi-VN')} out
                     </td>
-                    <td className="px-4 py-3 text-right text-xs text-zinc-400 whitespace-nowrap">
+                    <td className="px-4 py-3 text-right text-xs text-zinc-500 whitespace-nowrap">
                       {DATE_FMT.format(new Date(row.createdAt))}
                     </td>
                   </tr>
@@ -199,7 +199,7 @@ export default async function RewriteHistoryPage() {
             </table>
           </div>
           {items.length === 50 && (
-            <div className="px-4 py-3 border-t border-zinc-100 text-xs text-zinc-400 text-center">
+            <div className="px-4 py-3 border-t border-zinc-100 text-xs text-zinc-500 text-center">
               Hiển thị 50 lần gần nhất
             </div>
           )}

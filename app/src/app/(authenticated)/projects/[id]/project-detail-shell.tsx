@@ -232,7 +232,7 @@ export function ProjectDetailShell({ initialProject, initialFiles }: Props) {
               </span>
             )}
             {savedState === 'idle' && (
-              <span className="text-zinc-400">Tự động lưu sau 1.5s</span>
+              <span className="text-zinc-500">Tự động lưu sau 1.5s</span>
             )}
           </div>
         </div>
@@ -391,7 +391,7 @@ function FileRow({
           type="button"
           onClick={onDelete}
           disabled={isDeleting}
-          className="opacity-0 group-hover:opacity-100 transition text-zinc-400 hover:text-rose-600 p-1"
+          className="opacity-0 group-hover:opacity-100 transition text-zinc-500 hover:text-rose-600 p-1"
           title="Xoá"
         >
           {isDeleting ? (

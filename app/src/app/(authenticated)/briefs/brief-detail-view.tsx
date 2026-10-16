@@ -3,7 +3,7 @@
 
 'use client';
 
-import { FileText, Pencil, Send } from 'lucide-react';
+import { Ban, Drama, FileText, History, Lightbulb, Link2, Megaphone, Paperclip, PenLine, Pencil, Send, Target, Wrench, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { Brief, BriefStatusT } from '@/lib/briefs/brief-types';
 import {
@@ -124,42 +124,42 @@ export function BriefDetailView({
       {/* Sections — chỉ render khi có data tương ứng */}
       {brief.core_message && (
         <section>
-          <SectionHeader emoji="⚡" label="Core message (bất biến)" />
+          <SectionHeader icon={Zap} label="Core message (bất biến)" />
           <CoreMessageBox message={brief.core_message} />
         </section>
       )}
 
       {brief.audience_target && (
         <section>
-          <SectionHeader emoji="🎯" label="Target audience & emotion" />
+          <SectionHeader icon={Target} label="Target audience & emotion" />
           <AudienceTargetBlock target={brief.audience_target} />
         </section>
       )}
 
       {brief.deconstruct && (
         <section>
-          <SectionHeader emoji="🛠️" label="Công thức deconstruct (từ Spy Room)" />
+          <SectionHeader icon={Wrench} label="Công thức deconstruct (từ Spy Room)" />
           <DeconstructTable formula={brief.deconstruct} />
         </section>
       )}
 
       {brief.persona_tone && (
         <section>
-          <SectionHeader emoji="🎭" label="Persona & tone" />
+          <SectionHeader icon={Drama} label="Persona & tone" />
           <p className="text-sm text-zinc-700 leading-relaxed">{brief.persona_tone}</p>
         </section>
       )}
 
       {brief.proof_points.length > 0 && (
         <section>
-          <SectionHeader emoji="💡" label="Proof points có thể dùng" />
+          <SectionHeader icon={Lightbulb} label="Proof points có thể dùng" />
           <BulletList items={brief.proof_points} />
         </section>
       )}
 
       {brief.rules.length > 0 && (
         <section>
-          <SectionHeader emoji="🚫" label="Rules bắt buộc" />
+          <SectionHeader icon={Ban} label="Rules bắt buộc" />
           <BulletList items={brief.rules} />
         </section>
       )}
@@ -167,7 +167,7 @@ export function BriefDetailView({
       {/* Empty state khi brief chưa có rich content — hiện description thô */}
       {!brief.core_message && brief.description && (
         <section>
-          <SectionHeader emoji="📝" label="Mô tả" />
+          <SectionHeader icon={FileText} label="Mô tả" />
           <p className="text-sm text-zinc-700 leading-relaxed whitespace-pre-line">
             {brief.description}
           </p>
@@ -176,14 +176,14 @@ export function BriefDetailView({
 
       {brief.reference_links.length > 0 && (
         <section>
-          <SectionHeader emoji="🔗" label="Link tham khảo" />
+          <SectionHeader icon={Link2} label="Link tham khảo" />
           <ReferenceLinksList links={brief.reference_links} />
         </section>
       )}
 
       {brief.attachments.length > 0 && (
         <section>
-          <SectionHeader emoji="📎" label="File đính kèm" />
+          <SectionHeader icon={Paperclip} label="File đính kèm" />
           <AttachmentsList attachments={brief.attachments} />
         </section>
       )}
@@ -192,7 +192,7 @@ export function BriefDetailView({
           hoặc khi status không phải mine (writer cần thấy chỗ viết) */}
       {(brief.draft_content || brief.status !== 'mine') && (
         <section>
-          <SectionHeader emoji="✍️" label="Nội dung bài viết" />
+          <SectionHeader icon={PenLine} label="Nội dung bài viết" />
           {brief.draft_content ? (
             <div className="rounded-lg ring-1 ring-zinc-200 bg-zinc-50/50 px-4 py-3">
               <p className="text-sm text-zinc-800 leading-relaxed whitespace-pre-wrap">
@@ -202,7 +202,7 @@ export function BriefDetailView({
           ) : (
             <div className="rounded-lg border border-dashed border-zinc-300 bg-white px-4 py-6 text-center">
               <p className="text-sm text-zinc-500">Chưa có nội dung.</p>
-              <p className="text-xs text-zinc-400 mt-0.5">
+              <p className="text-xs text-zinc-500 mt-0.5">
                 Bấm "Viết bài" ở trên để bắt đầu.
               </p>
             </div>
@@ -214,7 +214,7 @@ export function BriefDetailView({
       {(brief.status === 'submitted' || brief.status === 'published') && (
         <section>
           <div className="flex items-center justify-between mb-2 [&>h4]:mb-0">
-            <SectionHeader emoji="📣" label="Đăng lên kênh" />
+            <SectionHeader icon={Megaphone} label="Đăng lên kênh" />
             {canEdit && brief.draft_content && (
               <Button
                 type="button"
@@ -238,7 +238,7 @@ export function BriefDetailView({
 
       {/* Activity timeline — luôn render dưới cùng */}
       <section className="pt-4 border-t border-zinc-100">
-        <SectionHeader emoji="🕓" label="Lịch sử hoạt động" />
+        <SectionHeader icon={History} label="Lịch sử hoạt động" />
         <BriefActivityTimeline briefId={brief.id} refetchKey={activityRefetchKey} />
       </section>
     </article>

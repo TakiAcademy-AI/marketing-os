@@ -66,7 +66,7 @@ export default async function LandingPage() {
           <h1 className="max-w-3xl text-4xl font-semibold tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
             Một dashboard.
             <br />
-            <span className="text-zinc-400">Toàn bộ KPI.</span>
+            <span className="text-zinc-500">Toàn bộ KPI.</span>
           </h1>
 
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-zinc-500">
@@ -196,7 +196,7 @@ export default async function LandingPage() {
 
       {/* ───── Footer ────────────────────────────────────────────────────── */}
       <footer className="border-t border-zinc-100 py-8">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 text-xs text-zinc-400">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 text-xs text-zinc-500">
           <span>© 2026 Marketing OS · TAKI</span>
           <span>v1.0 · MVP</span>
         </div>

@@ -47,7 +47,7 @@ export function ChannelHealthCard({ channel }: ChannelHealthCardProps) {
         <p className="truncate text-xs font-semibold text-zinc-800 leading-tight">
           {name}
         </p>
-        <p className="text-[10px] text-zinc-400 mt-0.5">{getPlatformName(platform)}</p>
+        <p className="text-[10px] text-zinc-500 mt-0.5">{getPlatformName(platform)}</p>
       </div>
 
       <div className="hidden sm:block flex-1 max-w-[80px] h-1.5 rounded-full bg-zinc-100 overflow-hidden">

@@ -289,7 +289,7 @@ export function AdsTokenForm({
         </div>
       </form>
 
-      <p className="text-[11px] text-zinc-400 mt-3">
+      <p className="text-[11px] text-zinc-500 mt-3">
         Token được mã hoá AES-256 (pgcrypto) trước khi lưu DB. Endpoint đã được
         loại khỏi auth đăng nhập nên token này là lớp bảo vệ duy nhất — giữ bí mật.
       </p>
