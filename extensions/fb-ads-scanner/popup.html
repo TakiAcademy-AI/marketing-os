@@ -111,6 +111,35 @@
       Nhớ <b>cuộn để nạp bài</b> trước khi quét.
     </p>
 
+    <hr style="border:none;border-top:1px solid #333;margin:14px 0" />
+
+    <h1 style="font-size:13px">🕗 Quét timeline Page (chạy ngầm)</h1>
+    <p style="font-size:11px;opacity:.7;margin:4px 0 8px">
+      Mỗi dòng một page (slug hoặc URL). Phải có kênh tương ứng trong Marketing OS
+      đã điền ô &quot;Page Facebook để quét công khai&quot;.
+    </p>
+
+    <label for="feedHandles">Danh sách page</label>
+    <textarea id="feedHandles" rows="3" placeholder="takidocvinhantam&#10;facebook.com/mot-page-khac"
+      style="width:100%;box-sizing:border-box;font-family:monospace;font-size:11px"></textarea>
+
+    <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+      <label style="display:flex;align-items:center;gap:4px;font-size:11px">
+        <input id="feedAuto" type="checkbox" /> Tự chạy
+      </label>
+      <label style="font-size:11px">mỗi
+        <input id="feedInterval" type="number" min="30" step="30" value="720"
+          style="width:64px" /> phút
+      </label>
+    </div>
+
+    <div style="display:flex;gap:6px;margin-top:8px">
+      <button id="feedSave" class="ghost" style="flex:1">Lưu lịch</button>
+      <button id="feedRun" class="primary" style="flex:1">Quét ngay</button>
+    </div>
+
+    <div id="feedStatus" style="font-size:11px;opacity:.75;margin-top:6px"></div>
+
     <div id="status">Sẵn sàng.</div>
 
     <script src="popup.js"></script>

@@ -21,10 +21,10 @@ const SESSION_TTL = 60 * 60 * 24 * 7;
 // 10MB body (proxyClientMaxBodySize) — sẽ truncate file lớn. Route handler
 // tự check session bên trong nên không mất bảo mật.
 //
-// `api/news/ingest-ads` và `api/news/ingest-web` được loại trừ vì gọi từ
-// Chrome extension (không có session cookie) — route tự xác thực bằng bearer
-// token ADS_INGEST_TOKEN. Nếu không loại trừ, proxy redirect /login →
-// extension không push được.
+// `api/news/ingest-ads`, `api/news/ingest-web` và `api/channels/ingest-posts`
+// được loại trừ vì gọi từ Chrome extension (không có session cookie) — route
+// tự xác thực bằng bearer token ADS_INGEST_TOKEN. Nếu không loại trừ, proxy
+// redirect /login → extension không push được.
 //
 // `api/admin/run-job` được loại trừ vì scheduler ngoài (Coolify Scheduled Task)
 // gọi bằng bearer CRON_TRIGGER_TOKEN, không có session cookie. Route tự xác
@@ -35,7 +35,7 @@ const SESSION_TTL = 60 * 60 * 24 * 7;
 // withMcpAuth (required: true) → thiếu/sai token trả 401.
 export const config = {
   matcher: [
-    '/((?!api/auth|api/skills/upload|api/news/ingest-ads|api/news/ingest-web|api/admin/run-job|api/admin/tiktok-debug|api/telegram/webhook|api/analytics/overview|api/mcp|_next|favicon.ico|public|login).*)',
+    '/((?!api/auth|api/skills/upload|api/news/ingest-ads|api/news/ingest-web|api/channels/ingest-posts|api/admin/run-job|api/admin/tiktok-debug|api/telegram/webhook|api/analytics/overview|api/mcp|_next|favicon.ico|public|login).*)',
   ],
 };
 

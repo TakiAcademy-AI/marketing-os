@@ -84,3 +84,67 @@ Bấm icon extension → popup:
 | `interceptor.js` | World MAIN — hook `fetch`/XHR, bắt JSON ad từ GraphQL |
 | `content.js` | World ISOLATED — gom buffer, trả về khi Scan |
 | `popup.html` / `popup.js` | Cấu hình + nút Scan + POST về website |
+
+---
+
+## 5. Quét timeline Page chạy ngầm (v1.1)
+
+Dành cho Page **đã mất quyền quản trị** nên không có Page Access Token.
+
+### Vì sao phải làm ở extension
+
+Quét từ server bằng `fb-cli` đã thử và bế tắc: session được Facebook công nhận
+(`fb whoami` trả tier 1) nhưng **không page nào qua được bài đầu tiên** — đo
+trên cả `nasa` lẫn page của khách, cả `fb feed` lẫn `fb page --posts`. Extension
+chạy trong Chrome thật mới có đủ cookie, header và IP mà Facebook tin.
+
+### Lấy được gì
+
+| | |
+|---|---|
+| ✅ Danh sách bài, tần suất đăng | tự động |
+| ✅ Reactions / comments / shares → ER | tự động |
+| ✅ Phân loại reel vs video | tự động |
+| ❌ Reach, impressions, inbox | **không bao giờ** — là Page Insights, dữ liệu riêng tư của Page |
+
+Followers và reach phải nhập tay trong trang chi tiết kênh.
+
+### Chuẩn bị
+
+Mỗi page cần một kênh tương ứng trong Marketing OS:
+**Kênh → Onboard kênh mới → ✍️ Kênh thủ công** → chọn Facebook → điền ô
+**"Page Facebook để quét công khai"**. Không có kênh thì server trả 404.
+
+### Dùng
+
+Trong popup, khối **🕗 Quét timeline Page**:
+
+1. Dán danh sách page, mỗi dòng một cái (slug hoặc URL đầy đủ đều được).
+2. Tick **Tự chạy** và đặt chu kỳ (tối thiểu 30 phút, mặc định 720 = 12 tiếng).
+3. **Lưu lịch**. Hoặc bấm **Quét ngay** để chạy thử.
+
+`siteUrl` và token dùng chung với phần quét Ads Library ở trên — không phải
+cấu hình lại.
+
+### Cách nó chạy
+
+Tới giờ, service worker mở **tab nền** (`active: false`, có ghim) cho từng page,
+để `feed-interceptor.js` bắt response GraphQL, cuộn vài nhịp cho Facebook tải
+thêm bài, gom rồi đóng tab. Tab có nằm trong thanh tab nhưng không nhảy lên
+trước mặt và không cướp focus. Giữa các page nghỉ 15 giây.
+
+Node thô được **rút gọn** trước khi gửi (node Comet nặng vài trăm KB → body
+phình → 502), rồi POST về `/api/channels/ingest-posts`. **Server map, không
+phải extension** — Facebook đổi tên field thì sửa server, không phải bảo mọi
+người cài lại extension.
+
+### Hạn chế phải biết
+
+- **Chrome phải đang chạy** và đã đăng nhập Facebook. Máy ngủ thì không có dữ
+  liệu. Đây không còn là cron trên server.
+- MV3 tắt service worker khi rảnh, nên lịch chạy bằng `chrome.alarms`; Chrome
+  có thể lệch giờ đôi chút.
+- Nó lái tài khoản Facebook thật theo lịch. Facebook có thể giới hạn, bắt
+  checkpoint hoặc khoá tài khoản đó. Cân nhắc dùng tài khoản phụ.
+- Vẫn là scraping: Facebook đổi payload là hỏng. Khi hỏng, response có
+  `unmappedSample` để cập nhật mapper nhanh.

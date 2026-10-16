@@ -1,9 +1,15 @@
 {
   "manifest_version": 3,
   "name": "FB Ads → Marketing OS",
-  "version": "1.0.0",
-  "description": "Quét Facebook Ads Library và đẩy về Marketing OS (Tin tức AI). Không cần Apify.",
-  "permissions": ["storage", "activeTab", "tabs", "scripting"],
+  "version": "1.1.0",
+  "description": "Quét Facebook Ads Library + timeline Page (chạy ngầm theo lịch) và đẩy về Marketing OS.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "tabs",
+    "scripting",
+    "alarms"
+  ],
   "host_permissions": [
     "https://www.facebook.com/*",
     "https://*/*",
@@ -15,16 +21,53 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://*.facebook.com/ads/library*"],
-      "js": ["interceptor.js"],
+      "matches": [
+        "*://*.facebook.com/ads/library*"
+      ],
+      "js": [
+        "interceptor.js"
+      ],
       "run_at": "document_start",
       "world": "MAIN"
     },
     {
-      "matches": ["*://*.facebook.com/ads/library*"],
-      "js": ["content.js"],
+      "matches": [
+        "*://*.facebook.com/ads/library*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start",
+      "world": "ISOLATED"
+    },
+    {
+      "matches": [
+        "*://*.facebook.com/*"
+      ],
+      "exclude_matches": [
+        "*://*.facebook.com/ads/library*"
+      ],
+      "js": [
+        "feed-interceptor.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "*://*.facebook.com/*"
+      ],
+      "exclude_matches": [
+        "*://*.facebook.com/ads/library*"
+      ],
+      "js": [
+        "feed-content.js"
+      ],
       "run_at": "document_start",
       "world": "ISOLATED"
     }
-  ]
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
 }

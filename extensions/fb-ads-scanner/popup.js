@@ -431,3 +431,74 @@ elScanPage.addEventListener('click', async () => {
     elScanPage.disabled = false;
   }
 });
+
+
+// ─── Quét timeline Page chạy ngầm ────────────────────────────────────────
+// Cấu hình nằm chung chrome.storage.local với phần Ads Library (siteUrl/token),
+// phần riêng chỉ là danh sách page + lịch. Mọi việc nặng do background.js làm;
+// popup chỉ đọc/ghi config và hiển thị kết quả lượt gần nhất.
+
+const elFeedHandles = document.getElementById('feedHandles');
+const elFeedAuto = document.getElementById('feedAuto');
+const elFeedInterval = document.getElementById('feedInterval');
+const elFeedSave = document.getElementById('feedSave');
+const elFeedRun = document.getElementById('feedRun');
+const elFeedStatus = document.getElementById('feedStatus');
+
+function parseHandles(text) {
+  return text
+    .split(/[\n,]/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+function renderFeedStatus(st) {
+  if (!st) return;
+  const bits = [];
+  if (st.nextRun) bits.push('lần tới: ' + new Date(st.nextRun).toLocaleString('vi-VN'));
+  else bits.push('lịch đang tắt');
+  const lr = st.lastRun;
+  if (lr) {
+    const ok = (lr.results || []).filter((r) => r.ok).length;
+    bits.push(
+      `lượt gần nhất ${new Date(lr.at).toLocaleString('vi-VN')}: ${ok}/${(lr.results || []).length} page OK`
+    );
+    for (const r of lr.results || []) {
+      bits.push(
+        `  • ${r.handle}: ${r.collected ?? 0} bài` +
+          (r.ok ? ` → lưu ${r.data?.upserted ?? 0}` : ` — ${r.error || 'lỗi'}`)
+      );
+    }
+  }
+  elFeedStatus.textContent = bits.join('\n');
+  elFeedStatus.style.whiteSpace = 'pre-wrap';
+}
+
+chrome.storage.local.get(['handles', 'autoEnabled', 'intervalMinutes'], (c) => {
+  elFeedHandles.value = (c.handles || []).join('\n');
+  elFeedAuto.checked = Boolean(c.autoEnabled);
+  elFeedInterval.value = c.intervalMinutes || 720;
+});
+chrome.runtime.sendMessage({ cmd: 'FEED_STATUS' }, renderFeedStatus);
+
+elFeedSave.addEventListener('click', () => {
+  const handles = parseHandles(elFeedHandles.value);
+  const intervalMinutes = Math.max(30, parseInt(elFeedInterval.value, 10) || 720);
+  chrome.storage.local.set(
+    { handles, autoEnabled: elFeedAuto.checked, intervalMinutes },
+    () => {
+      chrome.runtime.sendMessage({ cmd: 'FEED_RESCHEDULE' }, () => {
+        chrome.runtime.sendMessage({ cmd: 'FEED_STATUS' }, renderFeedStatus);
+      });
+    }
+  );
+});
+
+elFeedRun.addEventListener('click', () => {
+  elFeedStatus.textContent = 'Đang quét… (mở tab nền từng page, đừng đóng Chrome)';
+  elFeedRun.disabled = true;
+  chrome.runtime.sendMessage({ cmd: 'FEED_RUN_NOW' }, () => {
+    elFeedRun.disabled = false;
+    chrome.runtime.sendMessage({ cmd: 'FEED_STATUS' }, renderFeedStatus);
+  });
+});
