@@ -122,12 +122,38 @@ export function normalizePageRef(raw: string): string {
   }
 }
 
-/** Feed của 1 page — tier 0 thực tế trả 1 post, tier 1 trả tới `limit`. */
+/**
+ * Chứng minh session có THẬT SỰ hoạt động, không chỉ là có file.
+ *
+ * `fb auth status` chỉ đọc session.json trên đĩa; `fb whoami` tốn 1 request để
+ * hỏi Facebook — đúng ranh giới giữa "session tồn tại" và "session dùng được".
+ * Cần phân biệt vì cookie lưu đúng mà Facebook vẫn từ chối thì fb rơi về tier 0
+ * và `fb feed` chỉ trả 1 bài, trông y như page ít bài.
+ *
+ * Trả null nếu không xác thực được (hết hạn, bị từ chối, lỗi mạng).
+ */
+export async function fbWhoami(): Promise<Record<string, unknown> | null> {
+  try {
+    const rows = await runFb(['whoami']);
+    return rows[0] ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/** Feed của 1 page — tier 0 thực tế trả 1 post, tier 1 trả tới `limit`.
+ *
+ *  `noCache`: fb cache mọi trang 15 phút. Khi quét định kỳ ta muốn số mới, và
+ *  quan trọng hơn: nếu lần đọc trước rơi vào tier 0 (chưa có session) thì bản
+ *  tier 0 đó nằm trong cache, lần sau có session vẫn bị trả lại bản cũ. */
 export async function fetchFbPagePosts(
   pageRef: string,
-  limit = 10
+  limit = 10,
+  noCache = false
 ): Promise<Record<string, unknown>[]> {
-  return runFb(['feed', pageRef, '-n', String(limit)]);
+  const args = ['feed', pageRef, '-n', String(limit)];
+  if (noCache) args.push('--no-cache');
+  return runFb(args);
 }
 
 /** Avatar URL của page (fb page → avatar.uri). Null nếu không có. */

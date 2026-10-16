@@ -14,7 +14,12 @@
 // đã từng có page bị Facebook trả về trang đăng nhập. Dưới 5 page nên chậm không sao.
 
 import { db } from '@/lib/db';
-import { fetchFbPagePosts, importFbSession, normalizePageRef } from '@/lib/news/fb-cli';
+import {
+  fbWhoami,
+  fetchFbPagePosts,
+  importFbSession,
+  normalizePageRef,
+} from '@/lib/news/fb-cli';
 import { getSettingOrEnv } from '@/lib/settings/api-keys';
 import { mapScrapedPost } from '@/lib/fb-scrape/map-scraped-post';
 import { startSyncLog, finishSyncLog } from '@/lib/cron/sync-log';
@@ -58,7 +63,9 @@ async function loadScrapeAccounts(): Promise<ScrapeAccount[]> {
  */
 async function scrapeOneAccount(acc: ScrapeAccount): Promise<number> {
   const pageRef = normalizePageRef(acc.fb_scrape_handle);
-  const raw = await fetchFbPagePosts(pageRef, POSTS_PER_PAGE);
+  // noCache: fb giữ cache 15 phút. Lần đọc trước có thể đã rơi tier 0 (chưa có
+  // session) và bản đó còn trong cache — không bỏ qua thì session mới vô nghĩa.
+  const raw = await fetchFbPagePosts(pageRef, POSTS_PER_PAGE, true);
 
   const mapped = raw
     .map((item) => mapScrapedPost(item))
@@ -126,6 +133,21 @@ export async function runFbScrapeJob(): Promise<void> {
       console.warn(
         `[job-fb-scrape] fb auth import lỗi — vẫn thử đọc feed: ` +
           `${err instanceof Error ? err.message : err}`
+      );
+    }
+    // Import xong KHÔNG có nghĩa là Facebook chấp nhận: `auth import` chỉ ghi
+    // file xuống đĩa. whoami tốn 1 request để hỏi thật. Phân biệt chỗ này mới
+    // đọc được log: tier 0 trả đúng 1 bài/page, trông hệt như page ít bài.
+    const me = await fbWhoami();
+    if (me) {
+      console.log(
+        `[job-fb-scrape] Session OK (tier 1) — ${JSON.stringify(me).slice(0, 160)}`
+      );
+    } else {
+      console.warn(
+        '[job-fb-scrape] Cookie đã lưu nhưng Facebook TỪ CHỐI session (fb whoami fail). ' +
+          'Đang chạy tier 0 → mỗi page chỉ lấy được 1 bài. Lấy lại c_user + xs từ ' +
+          'trình duyệt đang đăng nhập, hoặc session đã hết hạn.'
       );
     }
   }
