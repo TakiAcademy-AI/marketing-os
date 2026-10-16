@@ -193,3 +193,77 @@ export async function runFbScrapeJob(): Promise<void> {
 
   console.log(`[job-fb-scrape] Done — ${totalRecords} hàng metric upserted`);
 }
+
+/**
+ * Quét thử MỘT handle mà KHÔNG ghi gì vào DB.
+ *
+ * Để trả lời được câu "page này quét ra bao nhiêu bài" trước khi tạo kênh, và
+ * để tách bạch hai nguyên nhân khi chỉ lấy được 1 bài: server không phân trang
+ * được (lỗi chung) hay riêng page đó bị chặn. Thiếu phép thử này thì chỉ còn
+ * cách tạo kênh thật rồi xoá đi.
+ *
+ * Chỉ đọc: không upsert, không đụng last_synced_at, không ghi api_sync_log.
+ */
+export async function probeFbScrape(rawHandle: string): Promise<{
+  handle: string;
+  sessionTier: number | null;
+  whoami: unknown;
+  posts: number;
+  postTypes: Record<string, number>;
+  newest: string | null;
+  oldest: string | null;
+  error?: string;
+}> {
+  const handle = normalizePageRef(rawHandle);
+
+  const [cUser, xs] = await Promise.all([
+    getSettingOrEnv('FB_SESSION_C_USER'),
+    getSettingOrEnv('FB_SESSION_XS'),
+  ]);
+  if (cUser && xs) {
+    try {
+      await importFbSession(cUser, xs);
+    } catch {
+      /* whoami bên dưới sẽ phản ánh */
+    }
+  }
+  const me = await fbWhoami();
+  const sessionTier =
+    me && typeof me.tier === 'number' ? (me.tier as number) : me ? 1 : null;
+
+  try {
+    const raw = await fetchFbPagePosts(handle, POSTS_PER_PAGE, true);
+    const mapped = raw
+      .map((r) => mapScrapedPost(r))
+      .filter((m): m is NonNullable<typeof m> => m !== null);
+
+    const postTypes: Record<string, number> = {};
+    for (const m of mapped) {
+      postTypes[m.post.post_type] = (postTypes[m.post.post_type] ?? 0) + 1;
+    }
+    const dates = mapped
+      .map((m) => m.post.published_at.toISOString())
+      .sort();
+
+    return {
+      handle,
+      sessionTier,
+      whoami: me,
+      posts: mapped.length,
+      postTypes,
+      newest: dates.at(-1) ?? null,
+      oldest: dates[0] ?? null,
+    };
+  } catch (err) {
+    return {
+      handle,
+      sessionTier,
+      whoami: me,
+      posts: 0,
+      postTypes: {},
+      newest: null,
+      oldest: null,
+      error: err instanceof Error ? err.message : String(err),
+    };
+  }
+}

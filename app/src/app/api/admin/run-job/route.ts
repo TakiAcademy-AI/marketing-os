@@ -35,6 +35,10 @@ const bodySchema = z.object({
     'ads_ingestion',
     'fb_scrape',
   ]),
+  // Chỉ dùng với job 'fb_scrape': quét THỬ một page mà không ghi gì vào DB.
+  // Để kiểm tra một handle trước khi tạo kênh, và để tách "server không phân
+  // trang được" khỏi "riêng page đó bị chặn".
+  handle: z.string().trim().min(1).max(200).optional(),
 });
 
 /** Constant-time compare token from `Authorization: Bearer <token>` against env. */
@@ -131,6 +135,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         break;
       }
       case 'fb_scrape': {
+        if (parsed.data.handle) {
+          const { probeFbScrape } = await import('@/lib/cron/job-fb-scrape');
+          report = await probeFbScrape(parsed.data.handle);
+          break;
+        }
         const { runFbScrapeJob } = await import('@/lib/cron/job-fb-scrape');
         await runFbScrapeJob();
         break;
