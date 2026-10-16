@@ -110,7 +110,18 @@ export function ApifyForm({
         const data = (await res.json().catch(() => ({}))) as { error?: string };
         throw new Error(data.error ?? `HTTP ${res.status}`);
       }
-      toast.success('Đã lưu cấu hình');
+      // Cookie chỉ được gửi khi điền ĐỦ CẢ HAI ô. Nếu cả hai cùng rỗng thì
+      // không có cảnh báo nào ở trên, và trước đây toast vẫn báo xanh trơn —
+      // user tưởng đã lưu cookie trong khi payload không hề chứa nó.
+      // Nói rõ cookie có đi kèm lần lưu này hay không.
+      const cookieSaved = Boolean(fbCUser.trim() && fbXs.trim());
+      toast.success(
+        cookieSaved
+          ? 'Đã lưu cấu hình + cookie Facebook'
+          : sessionSet
+            ? 'Đã lưu cấu hình'
+            : 'Đã lưu cấu hình — CHƯA có cookie Facebook, fb-cli chỉ lấy được ~1 bài/page'
+      );
       if (apiToken.trim()) {
         setApiToken('');
         setTokenSet(true);
@@ -241,8 +252,14 @@ export function ApifyForm({
         <details>
           <summary className="cursor-pointer text-[11px] font-semibold text-zinc-500 hover:text-zinc-700 flex items-center gap-1">
             <CookieIcon className="size-3 inline" />
-            Cookie Facebook (tuỳ chọn — mở khoá full timeline)
-            {sessionSet && <span className="text-emerald-600 ml-1">✓ đã set</span>}
+            Cookie Facebook (mở khoá full timeline)
+            {sessionSet ? (
+              <span className="text-emerald-600 ml-1">✓ đã set</span>
+            ) : (
+              // Trước đây không set thì KHÔNG hiện gì — không phân biệt được
+              // "chưa set" với "đã set rồi", nên dễ tưởng xong trong khi chưa.
+              <span className="text-amber-600 ml-1">⚠ chưa set — chỉ lấy được ~1 bài/page</span>
+            )}
           </summary>
           <div className="mt-2 space-y-2 pl-2 border-l-2 border-zinc-100">
             <div className="grid grid-cols-2 gap-2">
