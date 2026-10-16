@@ -80,6 +80,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     ? auth.slice(7).trim()
     : '';
   if (!provided || !tokenEquals(provided, expected)) {
+    // Log cả nhánh từ chối: không có log thì không phân biệt được "extension
+    // chưa gọi" với "gọi rồi nhưng bị chặn" — đúng tình huống đã mất công đoán.
+    console.warn('[ingest-posts] 401 — token sai hoặc thiếu');
     return json({ error: 'Unauthorized — token sai hoặc thiếu.' }, 401);
   }
 
@@ -115,6 +118,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   );
   const account = acc.rows[0];
   if (!account) {
+    console.warn(`[ingest-posts] 404 — chưa có kênh nào gắn page "${handle}"`);
     return json(
       {
         error: `Chưa có kênh nào gắn page "${handle}". Vào Kênh → Onboard kênh mới → Kênh thủ công và điền ô "Page Facebook để quét công khai".`,
@@ -124,6 +128,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 
   if (items.length === 0) {
+    console.warn(
+      `[ingest-posts] ${account.name} (${handle}): extension gửi 0 item — ` +
+        'tab nền không thu được bài nào (Facebook chưa load, hoặc chưa đăng nhập trong Chrome đó).'
+    );
     return json({ received: 0, mapped: 0, upserted: 0, channel: account.name });
   }
 

@@ -92,9 +92,9 @@ async function push(handle, stories, conf) {
   if (!conf.siteUrl || !conf.token) {
     return { ok: false, error: 'Chưa cấu hình Website URL hoặc token' };
   }
-  if (!stories.length) {
-    return { ok: false, error: 'Không thu được bài nào' };
-  }
+  // Vẫn gửi khi rỗng: để server ghi nhận LÀ CÓ chạy. Không gửi thì phía server
+  // không phân biệt được "extension chưa chạy" với "chạy nhưng không thu được
+  // gì" — hai nguyên nhân cần sửa khác hẳn nhau.
   const endpoint = conf.siteUrl.replace(/\/+$/, '') + '/api/channels/ingest-posts';
   try {
     const res = await fetch(endpoint, {
