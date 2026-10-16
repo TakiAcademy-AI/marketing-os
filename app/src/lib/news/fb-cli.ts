@@ -156,6 +156,19 @@ export async function fetchFbPagePosts(
   return runFb(args);
 }
 
+/** Bài của page qua lệnh `fb page --posts` thay vì `fb feed`.
+ *  Hai lệnh đọc surface khác nhau (smoke test của fb-cli chạy cả hai), nên khi
+ *  `feed` kẹt ở bài đầu thì đây là đường còn lại đáng thử trước khi kết luận. */
+export async function fetchFbPagePostsViaPage(
+  pageRef: string,
+  limit = 10,
+  noCache = false
+): Promise<Record<string, unknown>[]> {
+  const args = ['page', pageRef, '--posts', '-n', String(limit)];
+  if (noCache) args.push('--no-cache');
+  return runFb(args);
+}
+
 /** Avatar URL của page (fb page → avatar.uri). Null nếu không có. */
 export async function fetchFbPageAvatar(pageRef: string): Promise<string | null> {
   const items = await runFb(['page', pageRef, '--fields', 'id,handle,name,avatar']);

@@ -17,6 +17,7 @@ import { db } from '@/lib/db';
 import {
   fbWhoami,
   fetchFbPagePosts,
+  fetchFbPagePostsViaPage,
   importFbSession,
   normalizePageRef,
 } from '@/lib/news/fb-cli';
@@ -209,6 +210,8 @@ export async function probeFbScrape(rawHandle: string): Promise<{
   sessionTier: number | null;
   whoami: unknown;
   posts: number;
+  /** Số bài khi dùng `fb page --posts`; -1 = lệnh lỗi. */
+  postsViaPageCmd?: number;
   postTypes: Record<string, number>;
   newest: string | null;
   oldest: string | null;
@@ -231,6 +234,14 @@ export async function probeFbScrape(rawHandle: string): Promise<{
   const sessionTier =
     me && typeof me.tier === 'number' ? (me.tier as number) : me ? 1 : null;
 
+  // So cả hai lệnh: `feed` và `page --posts` đọc surface khác nhau.
+  let viaPage = -1;
+  try {
+    viaPage = (await fetchFbPagePostsViaPage(handle, POSTS_PER_PAGE, true)).length;
+  } catch {
+    viaPage = -1;
+  }
+
   try {
     const raw = await fetchFbPagePosts(handle, POSTS_PER_PAGE, true);
     const mapped = raw
@@ -250,6 +261,7 @@ export async function probeFbScrape(rawHandle: string): Promise<{
       sessionTier,
       whoami: me,
       posts: mapped.length,
+      postsViaPageCmd: viaPage,
       postTypes,
       newest: dates.at(-1) ?? null,
       oldest: dates[0] ?? null,
