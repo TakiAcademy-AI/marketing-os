@@ -15,6 +15,20 @@
     return undefined;
   }
 
+  // "238K" -> 238000. Tab reels chỉ render số rút gọn, không có số nguyên.
+  function compact(v) {
+    if (typeof v !== 'string') return undefined;
+    const m = v.trim().match(/^([\d.,]+)\s*([KkMmBb])?$/);
+    if (!m) return undefined;
+    const n = parseFloat(m[1].replace(/,/g, ''));
+    if (!isFinite(n)) return undefined;
+    const suf = (m[2] || '').toLowerCase();
+    if (suf === 'k') return Math.round(n * 1e3);
+    if (suf === 'm') return Math.round(n * 1e6);
+    if (suf === 'b') return Math.round(n * 1e9);
+    return Math.round(n);
+  }
+
   function pick(o, path) {
     let cur = o;
     for (const k of path.split('.')) {
@@ -57,7 +71,11 @@
           },
         },
         share_count: { count: num(pick(fb, 'share_count.count')) ?? num(fb.reshare_count) },
-        video_view_count: num(fb.video_view_count) ?? num(s.video_view_count),
+        video_view_count:
+          num(fb.video_view_count) ??
+          num(s.video_view_count) ??
+          num(s.play_count) ??
+          compact(s.play_count_reduced),
       },
     };
   }

@@ -24,7 +24,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { getSettingOrEnv } from '@/lib/settings/api-keys';
-import { mapExtensionPost } from '@/lib/fb-scrape/map-extension-post';
+import { extensionPostId, mapExtensionPost } from '@/lib/fb-scrape/map-extension-post';
 import { normalizePageRef } from '@/lib/news/fb-cli';
 import { startSyncLog, finishSyncLog } from '@/lib/cron/sync-log';
 import {
@@ -137,10 +137,29 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   const logId = await startSyncLog('fb_scrape', account.id);
   try {
+    // Node reel ở tab /reels thường chỉ có id + lượt xem, không có thời gian
+    // tạo. Tra published_at của bài đã biết để gắn số vào ĐÚNG ngày; bài lần
+    // đầu thấy thì lấy hôm nay, và upsertSocialPost ghim lại nên lần sau tra
+    // ra chính ngày đó — không đẻ thêm hàng mỗi ngày cho cùng một bài.
+    const ids = items
+      .map((i) => extensionPostId(i))
+      .filter((v): v is string => v !== null);
+    const known = new Map<string, Date>();
+    if (ids.length) {
+      const prev = await db.query<{ external_id: string; published_at: Date }>(
+        `SELECT external_id, published_at FROM social_post
+          WHERE account_id = $1 AND external_id = ANY($2::text[])`,
+        [account.id, ids]
+      );
+      for (const r of prev.rows) known.set(r.external_id, r.published_at);
+    }
+    const today = new Date();
+
     const mapped = [];
     const unmapped: string[] = [];
     for (const item of items) {
-      const m = mapExtensionPost(item);
+      const id = extensionPostId(item);
+      const m = mapExtensionPost(item, (id && known.get(id)) || today);
       if (m) mapped.push(m);
       else if (unmapped.length < UNMAPPED_SAMPLE) {
         unmapped.push(JSON.stringify(item).slice(0, UNMAPPED_CHARS));

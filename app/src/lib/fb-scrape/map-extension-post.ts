@@ -48,6 +48,12 @@ function firstInt(obj: unknown, paths: string[]): number {
 
 const ID_PATHS = ['post_id', 'postID', 'id', 'story.post_id', 'node.post_id'];
 
+/** Id của node, lấy riêng để caller tra ngày đăng trong DB trước khi map. */
+export function extensionPostId(raw: unknown): string | null {
+  if (!raw || typeof raw !== 'object') return null;
+  return firstStr(raw, ID_PATHS);
+}
+
 const URL_PATHS = [
   'url',
   'wwwURL',
@@ -147,15 +153,26 @@ function derivePostType(url: string | null, node: unknown): string {
  * không có id thì không upsert idempotent được, không có ngày thì
  * post_metric_daily không có khoá.
  */
-export function mapExtensionPost(raw: unknown): MappedExtensionPost | null {
+export function mapExtensionPost(
+  raw: unknown,
+  /**
+   * Ngày dùng khi node KHÔNG mang thời gian tạo — node reel ở tab /reels
+   * thường chỉ có id + lượt xem. Caller truyền published_at của bài đã có
+   * trong DB; chưa có thì truyền ngày hôm nay, và vì upsertSocialPost ghim
+   * published_at lại nên lần quét sau sẽ tra ra đúng ngày đó, không đẻ thêm
+   * hàng mới mỗi ngày.
+   */
+  fallbackDate?: Date
+): MappedExtensionPost | null {
   if (!raw || typeof raw !== 'object') return null;
 
   const externalId = firstStr(raw, ID_PATHS);
   if (!externalId) return null;
 
-  const publishedAt = parsePublishedAt(
-    TIME_PATHS.map((p) => at(raw, p)).find((v) => v !== undefined && v !== null)
-  );
+  const publishedAt =
+    parsePublishedAt(
+      TIME_PATHS.map((p) => at(raw, p)).find((v) => v !== undefined && v !== null)
+    ) ?? fallbackDate ?? null;
   if (!publishedAt) return null;
 
   const permalink = firstStr(raw, URL_PATHS);

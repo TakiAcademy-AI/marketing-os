@@ -63,8 +63,8 @@ function sendToTab(tabId, msg) {
 }
 
 /** Quét 1 page. Trả { handle, stories } — chưa đẩy đi đâu. */
-async function scrapeHandle(handle, conf) {
-  const url = `https://www.facebook.com/${encodeURIComponent(handle)}`;
+async function scrapeOne(handle, conf, path) {
+  const url = `https://www.facebook.com/${encodeURIComponent(handle)}${path}`;
   const tab = await chrome.tabs.create({ url, active: false, pinned: true });
   try {
     await waitForTabLoad(tab.id);
@@ -77,8 +77,8 @@ async function scrapeHandle(handle, conf) {
     });
     const res = await sendToTab(tab.id, { cmd: 'FEED_COLLECT' });
     const stories = (res && res.stories) || [];
-    log(`${handle}: thu được ${stories.length} bài`);
-    return { handle, stories };
+    log(`${handle}${path || '/'}: thu được ${stories.length} bài`);
+    return stories;
   } finally {
     try {
       await chrome.tabs.remove(tab.id);
@@ -123,7 +123,17 @@ async function runAll() {
   const results = [];
   for (const handle of conf.handles) {
     try {
-      const { stories } = await scrapeHandle(handle, conf);
+      // Quét CẢ hai mặt: timeline (bài thường) và tab /reels (reel). Tab reels
+      // là nơi duy nhất thấy ĐỦ reel khi cuộn — curl ẩn danh chỉ được ~10 cái
+      // Facebook tự chọn. Gộp lại, dedupe theo id ở bước dưới.
+      const fromFeed = await scrapeOne(handle, conf, '');
+      await new Promise((r) => setTimeout(r, 8000));
+      const fromReels = await scrapeOne(handle, conf, '/reels');
+      const byId = new Map();
+      for (const s of [...fromFeed, ...fromReels]) {
+        if (s && s.post_id) byId.set(String(s.post_id), s);
+      }
+      const stories = Array.from(byId.values());
       const pushed = await push(handle, stories, conf);
       results.push({ handle, collected: stories.length, ...pushed });
     } catch (err) {

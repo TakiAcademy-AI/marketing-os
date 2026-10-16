@@ -14,6 +14,14 @@
   // dấu hiệu cấu trúc thay vì tên field cố định, để Comet đổi tên vẫn bắt được.
   function looksLikeStory(o) {
     if (!o || typeof o !== 'object' || Array.isArray(o)) return false;
+
+    // Node REEL ở tab /reels: có lượt xem + id, nhưng KHÔNG có feedback hay
+    // comet_sections như story ở timeline. Bắt riêng, nếu không thì quét tab
+    // reels về tay không.
+    const hasViews =
+      o.play_count_reduced != null || o.play_count != null || o.video_view_count != null;
+    if (hasViews && typeof o.id === 'string') return true;
+
     const hasId =
       typeof o.post_id === 'string' ||
       typeof o.postID === 'string' ||
@@ -74,7 +82,8 @@
     if (
       text.indexOf('creation_time') === -1 &&
       text.indexOf('comet_sections') === -1 &&
-      text.indexOf('post_id') === -1
+      text.indexOf('post_id') === -1 &&
+      text.indexOf('play_count') === -1
     ) {
       return;
     }
