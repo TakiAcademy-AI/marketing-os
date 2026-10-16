@@ -109,9 +109,15 @@ export async function runFbScrapeJob(): Promise<void> {
     getSettingOrEnv('FB_SESSION_XS'),
   ]);
   if (!cUser || !xs) {
+    // Nêu đích danh key nào thiếu. Gộp chung một câu thì không phân biệt được
+    // "chưa nhập gì" với "nhập nửa vời", mà nửa vời là ca đã xảy ra thật:
+    // UI báo "đã set" vì chỉ xét c_user, còn xs thì không vào được DB.
+    const missing = [!cUser && 'FB_SESSION_C_USER', !xs && 'FB_SESSION_XS']
+      .filter(Boolean)
+      .join(' + ');
     console.warn(
-      '[job-fb-scrape] Chưa cấu hình session Facebook (FB_SESSION_C_USER + FB_SESSION_XS ' +
-        'ở Settings → Tích hợp API). fb-cli sẽ chạy tier 0 và chỉ trả ~1 bài/page.'
+      `[job-fb-scrape] Thiếu session Facebook: ${missing} (Settings → Tích hợp API). ` +
+        'fb-cli sẽ chạy tier 0 và chỉ trả ~1 bài/page.'
     );
   } else {
     try {

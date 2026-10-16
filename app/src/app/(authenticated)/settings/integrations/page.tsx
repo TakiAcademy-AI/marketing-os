@@ -50,7 +50,7 @@ export default async function IntegrationsPage({ searchParams }: PageProps) {
     );
   }
 
-  const [orMeta, fbIdMeta, fbSecretMeta, apifyTokenMeta, fbSessionMeta, adsTokenMeta, googleIdMeta, googleSecretMeta,
+  const [orMeta, fbIdMeta, fbSecretMeta, apifyTokenMeta, fbSessionMeta, fbSessionXsMeta, adsTokenMeta, googleIdMeta, googleSecretMeta,
          larkAppIdMeta, larkAppSecretMeta,
          larkMktAppTokenMeta, larkMktTableIdMeta, larkOrderAppTokenMeta, larkOrderTableIdMeta,
          telegramBotTokenMeta, telegramChatIdMeta] =
@@ -60,6 +60,7 @@ export default async function IntegrationsPage({ searchParams }: PageProps) {
       FB_APP_SECRET_KEY,
       'APIFY_API_TOKEN',
       'FB_SESSION_C_USER',
+      'FB_SESSION_XS',
       'ADS_INGEST_TOKEN',
       GOOGLE_CLIENT_ID_KEY,
       GOOGLE_CLIENT_SECRET_KEY,
@@ -137,7 +138,10 @@ export default async function IntegrationsPage({ searchParams }: PageProps) {
 
       <ApifyForm
         apiTokenIsSet={apifyTokenMeta?.isSet ?? false}
-        fbSessionIsSet={fbSessionMeta?.isSet ?? false}
+        // fb-cli cần CẢ HAI cookie: importFbSession(cUser, xs) và job đều kiểm
+        // cả hai. Trước đây cờ này chỉ xét c_user nên UI báo "đã set" trong khi
+        // job báo thiếu session — mâu thuẫn không ai giải thích nổi.
+        fbSessionIsSet={Boolean(fbSessionMeta?.isSet && fbSessionXsMeta?.isSet)}
         twitterHandles={twitterHandles ?? ''}
         facebookPages={facebookPages ?? ''}
         twitterActor={twitterActor ?? ''}
