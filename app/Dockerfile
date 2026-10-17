@@ -123,6 +123,13 @@ RUN apk add --no-cache python3 py3-pip && \
 # must be owned by UID 1001 to remain writable.
 RUN mkdir -p /app/storage/skills /app/storage/fb-cli && chown -R nextjs:nodejs /app/storage
 
+# OpenAI Codex CLI — AI backend cho chat feedback loop (/team/feedback).
+# Đăng nhập ChatGPT lưu ở CODEX_HOME (volume ./data/codex) để sống qua redeploy.
+# Đăng nhập 1 lần: docker exec -it <container> codex login --device-auth
+RUN npm install -g @openai/codex@0.163.0 && \
+    mkdir -p /app/storage/codex && chown -R nextjs:nodejs /app/storage/codex
+ENV CODEX_HOME=/app/storage/codex
+
 USER nextjs
 EXPOSE 3000
 

@@ -49,6 +49,7 @@ services:
       # Chat attachments: file/image đính kèm trong 1 message (ad-hoc,
       # không phải knowledge persistent)
       - ./data/chat-attachments:/app/storage/chat-attachments
+      - ./data/codex:/app/storage/codex
     networks:
       - internal
     logging:
