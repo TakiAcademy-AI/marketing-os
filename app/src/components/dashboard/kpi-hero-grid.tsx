@@ -1,4 +1,4 @@
-import { Eye, MessageSquare, Target, Users, Wallet } from 'lucide-react';
+import { Eye, MessageSquare, Target, Users } from 'lucide-react';
 import { KpiHeroCard } from './kpi-hero-card';
 import type { KpiData } from '@/lib/queries/dashboard-kpi';
 import type { TrendDataPoint } from '@/lib/queries/dashboard-trend';
@@ -10,7 +10,9 @@ function isAllZero(data: KpiData): boolean {
     data.reach === 0 &&
     data.avgEr === 0 &&
     data.conversions === 0 &&
-    data.revenue === 0 &&
+    // KHÔNG xét data.revenue: thẻ Doanh thu đã bỏ khỏi dashboard, nên dữ liệu
+    // doanh thu không làm lưới này có gì để hiện. Vẫn giữ nguyên trong query
+    // vì báo cáo Lark và MCP analytics còn đọc.
     data.totalFollowers === 0
   );
 }
@@ -36,7 +38,6 @@ export function KpiHeroGrid({ data, days, trend = [] }: KpiHeroGridProps) {
   // Single-series arrays for each card's sparkline.
   // engagement_rate isn't a column on trend → derive (engagement / reach * 100).
   // Lead has a real daily series — sourced from landing_page_conversion.
-  // Revenue card has no sparkline (no trend series collected for manual_revenue yet).
   const reachSeries = trend.map((t) => t.reach);
   const erSeries = trend.map((t) =>
     t.reach > 0 ? (t.engagement / t.reach) * 100 : 0
@@ -45,7 +46,7 @@ export function KpiHeroGrid({ data, days, trend = [] }: KpiHeroGridProps) {
   const followersSeries = trend.map((t) => t.followers);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       <KpiHeroCard
         title="Total Reach"
         icon={Eye}
@@ -75,15 +76,6 @@ export function KpiHeroGrid({ data, days, trend = [] }: KpiHeroGridProps) {
         format="number"
         subtitle="Ladipage + tin nhắn"
         sparkline={leadSeries}
-      />
-      <KpiHeroCard
-        title="Doanh thu"
-        icon={Wallet}
-        tone="amber"
-        value={data.revenue}
-        prevValue={data.revenuePrev}
-        format="currency"
-        subtitle="nhập tay theo kênh"
       />
       <KpiHeroCard
         title="Total Followers"
