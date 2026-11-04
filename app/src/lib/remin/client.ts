@@ -1,12 +1,14 @@
 import 'server-only';
 
+import { getReminConfig } from './config';
+
 // Client gọi cổng MCP chỉ đọc của Remin (POST <REMIN_API_URL>/api/admin/v1/mcp).
 // Stateless, không cần `initialize`: gửi thẳng JSON-RPC `tools/call`, kết quả nằm
 // ở `result.structuredContent`.
 //
 // Token là mã kết nối cá nhân `rmn_mcp_…` tạo trong admin Remin (mục "Kết nối
-// Claude"), có hạn tối đa 90 ngày. Chỉ đọc ở server, KHÔNG bao giờ gửi xuống trình
-// duyệt và không đưa vào câu lỗi.
+// Claude"), lấy qua getReminConfig (Settings → Tích hợp API, rồi mới tới env). Chỉ
+// đọc ở server, KHÔNG bao giờ gửi xuống trình duyệt và không đưa vào câu lỗi.
 
 const TIMEOUT_MS = 30_000;
 
@@ -21,7 +23,7 @@ export class ReminApiError extends Error {
 }
 
 const NEW_TOKEN_HINT =
-  'Admin cần tạo mã mới trong admin Remin (mục "Kết nối Claude") rồi cập nhật REMIN_MCP_TOKEN.';
+  'Admin cần tạo mã mới trong admin Remin (mục "Kết nối Claude") rồi cập nhật ở Settings → Tích hợp API.';
 
 const INVALID_TOKEN_MESSAGE = `Mã kết nối Remin không hợp lệ. ${NEW_TOKEN_HINT}`;
 
@@ -30,10 +32,6 @@ const AUTH_MESSAGES: Record<string, string> = {
   TOKEN_REVOKED: `Mã kết nối Remin đã bị thu hồi. ${NEW_TOKEN_HINT}`,
   ACCOUNT_NOT_ALLOWED: `Chủ mã kết nối không còn quyền đọc số liệu Remin. ${NEW_TOKEN_HINT}`,
 };
-
-export function isReminConfigured(): boolean {
-  return Boolean(process.env.REMIN_API_URL && process.env.REMIN_MCP_TOKEN);
-}
 
 interface McpEnvelope {
   error?: { message?: string; data?: { code?: string } };
@@ -73,12 +71,11 @@ export async function callReminTool(
   name: string,
   args: Record<string, unknown> = {}
 ): Promise<unknown> {
-  const baseUrl = process.env.REMIN_API_URL?.replace(/\/+$/, '');
-  const token = process.env.REMIN_MCP_TOKEN;
+  const { apiUrl: baseUrl, mcpToken: token } = await getReminConfig();
   if (!baseUrl || !token) {
     throw new ReminApiError(
       'NOT_CONFIGURED',
-      'Chưa cấu hình kết nối Remin (REMIN_API_URL, REMIN_MCP_TOKEN).'
+      'Chưa cấu hình kết nối Remin (Settings → Tích hợp API).'
     );
   }
 
