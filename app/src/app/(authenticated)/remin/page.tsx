@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { resolveRangeFromSearchParams } from '@/lib/dashboard/time-range';
-import { isReminConfigured } from '@/lib/remin/client';
+import { getReminConfig } from '@/lib/remin/config';
 import { dayMonth } from '@/lib/remin/format';
 import { loadReminOverview, reminAdminHref } from '@/lib/remin/overview';
 import { DashboardDateRangePicker } from '@/components/dashboard/date-range-picker';
@@ -50,13 +50,14 @@ export default async function ReminPage({ searchParams }: ReminPageProps) {
     </div>
   );
 
-  if (!isReminConfigured()) {
+  const config = await getReminConfig();
+  if (!config.apiUrl || !config.mcpToken) {
     return (
       <div className="flex flex-col gap-6">
         {header}
         <p className="rounded-xl bg-amber-50 p-4 text-sm text-amber-800 ring-1 ring-amber-200">
-          Chưa cấu hình kết nối Remin. Admin cần khai REMIN_API_URL và REMIN_MCP_TOKEN
-          (mã tạo trong admin Remin, mục &quot;Kết nối Claude&quot;).
+          Chưa cấu hình kết nối Remin. Admin cần nhập ở Settings → Tích hợp API (mã tạo
+          trong admin Remin, mục &quot;Kết nối Claude&quot;).
         </p>
       </div>
     );
@@ -78,9 +79,9 @@ export default async function ReminPage({ searchParams }: ReminPageProps) {
   const prevRangeText = ov
     ? `${dayMonth(ov.prevRange.from)} → ${dayMonth(ov.prevRange.to)}`
     : '';
-  const financeHref = reminAdminHref(`/finance?${periodQuery}`);
-  const adsHref = reminAdminHref(`/ads?${periodQuery}`);
-  const deviceUsageHref = reminAdminHref('/device-usage');
+  const financeHref = reminAdminHref(config.adminUrl, `/finance?${periodQuery}`);
+  const adsHref = reminAdminHref(config.adminUrl, `/ads?${periodQuery}`);
+  const deviceUsageHref = reminAdminHref(config.adminUrl, '/device-usage');
 
   return (
     <div className="flex flex-col gap-6">
@@ -157,7 +158,7 @@ export default async function ReminPage({ searchParams }: ReminPageProps) {
       {attention.ok && (
         <AttentionList
           items={attention.data.items}
-          hrefOf={(item) => reminAdminHref(item.href)}
+          hrefOf={(item) => reminAdminHref(config.adminUrl, item.href)}
         />
       )}
     </div>

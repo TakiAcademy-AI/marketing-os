@@ -91,8 +91,7 @@ export async function loadReminOverview(range: { from: string; to: string }) {
   return { overview, revenue, weekly, funnel, attention };
 }
 
-/** Link sang một màn trong admin Remin; chưa khai REMIN_ADMIN_URL thì không có link. */
-export function reminAdminHref(path: string): string | null {
-  const base = process.env.REMIN_ADMIN_URL?.replace(/\/+$/, '');
-  return base && path.startsWith('/') ? `${base}${path}` : null;
+/** Link sang một màn trong admin Remin; chưa có `adminUrl` (từ getReminConfig) thì không có link. */
+export function reminAdminHref(adminUrl: string | null, path: string): string | null {
+  return adminUrl && path.startsWith('/') ? `${adminUrl}${path}` : null;
 }
