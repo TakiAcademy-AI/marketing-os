@@ -16,6 +16,13 @@ import { GoogleAnalyticsForm } from './google-analytics-form';
 import { LarkAppForm } from './lark-form';
 import { LarkBaseForm } from './lark-base-form';
 import { TelegramForm } from './telegram-form';
+import { ReminForm } from './remin-form';
+import {
+  REMIN_ADMIN_URL_KEY,
+  REMIN_API_URL_KEY,
+  REMIN_MCP_TOKEN_KEY,
+  getReminConfig,
+} from '@/lib/remin/config';
 import { TELEGRAM_BOT_TOKEN_KEY, TELEGRAM_CHAT_ID_KEY } from '@/app/api/settings/telegram/route';
 import { LARK_APP_ID_KEY, LARK_APP_SECRET_KEY } from '@/lib/lark/client';
 import {
@@ -53,7 +60,8 @@ export default async function IntegrationsPage({ searchParams }: PageProps) {
   const [orMeta, fbIdMeta, fbSecretMeta, apifyTokenMeta, fbSessionMeta, fbSessionXsMeta, adsTokenMeta, googleIdMeta, googleSecretMeta,
          larkAppIdMeta, larkAppSecretMeta,
          larkMktAppTokenMeta, larkMktTableIdMeta, larkOrderAppTokenMeta, larkOrderTableIdMeta,
-         telegramBotTokenMeta, telegramChatIdMeta] =
+         telegramBotTokenMeta, telegramChatIdMeta,
+         reminApiMeta, reminTokenMeta] =
     await listSettingsMetadata([
       OPENROUTER_KEY_NAME,
       FB_APP_ID_KEY,
@@ -72,6 +80,8 @@ export default async function IntegrationsPage({ searchParams }: PageProps) {
       LARK_BASE_ORDER_TABLE_ID_KEY,
       TELEGRAM_BOT_TOKEN_KEY,
       TELEGRAM_CHAT_ID_KEY,
+      REMIN_API_URL_KEY,
+      REMIN_MCP_TOKEN_KEY,
     ]);
   // Load plaintext lists (not secret — hiển thị OK trong UI)
   const [googleConnected, twitterHandles, facebookPages, twitterActor] = await Promise.all([
@@ -80,6 +90,11 @@ export default async function IntegrationsPage({ searchParams }: PageProps) {
     getSetting('APIFY_FACEBOOK_PAGES'),
     getSetting('APIFY_TWITTER_ACTOR'),
   ]);
+  // getReminConfig đọc DB trước rồi tới env → ô nhập luôn hiện giá trị ĐANG
+  // DÙNG, kể cả khi nó đến từ biến môi trường chứ không phải DB.
+  const remin = await getReminConfig();
+  // Chưa có bản ghi DB nào mà vẫn có giá trị ⇒ đang chạy bằng env.
+  const reminUsingEnv = !reminApiMeta?.isSet && Boolean(remin.apiUrl);
   const openrouter = orMeta ?? {
     key: OPENROUTER_KEY_NAME,
     isSet: false,
@@ -180,6 +195,15 @@ export default async function IntegrationsPage({ searchParams }: PageProps) {
         initialBotTokenIsSet={telegramBotTokenMeta?.isSet ?? false}
         initialChatIdIsSet={telegramChatIdMeta?.isSet ?? false}
         initialUpdatedAt={telegramBotTokenMeta?.updatedAt ?? null}
+      />
+
+      <ReminForm
+        initialApiUrl={remin.apiUrl ?? ''}
+        initialAdminUrl={remin.adminUrl ?? ''}
+        tokenIsSet={Boolean(remin.mcpToken)}
+        usingEnvFallback={reminUsingEnv}
+        updatedAt={reminTokenMeta?.updatedAt ?? reminApiMeta?.updatedAt ?? null}
+        updatedByName={reminTokenMeta?.updatedByName ?? reminApiMeta?.updatedByName ?? null}
       />
 
       <div className="rounded-xl border border-dashed border-zinc-300 bg-zinc-50/50 px-5 py-4 text-xs text-zinc-500 italic">
