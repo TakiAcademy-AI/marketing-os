@@ -6,6 +6,7 @@ import { callReminTool, ReminApiError } from './client';
 import {
   attentionSchema,
   funnelSchema,
+  mktDashboardSchema,
   overviewSchema,
   revenueSchema,
   weeklyTrendsSchema,
@@ -55,6 +56,13 @@ const fetchAttention = unstable_cache(
   { revalidate: CACHE_SECONDS }
 );
 
+const fetchMktDashboard = unstable_cache(
+  async (from: string, to: string) =>
+    mktDashboardSchema.parse(await callReminTool('get_mkt_dashboard', { from, to })),
+  ['remin-mkt-dashboard-v1'],
+  { revalidate: CACHE_SECONDS }
+);
+
 export type Section<T> =
   | { ok: true; data: T }
   | { ok: false; message: string };
@@ -81,14 +89,15 @@ async function section<T>(load: () => Promise<T>): Promise<Section<T>> {
 }
 
 export async function loadReminOverview(range: { from: string; to: string }) {
-  const [overview, revenue, weekly, funnel, attention] = await Promise.all([
+  const [mkt, overview, revenue, weekly, funnel, attention] = await Promise.all([
+    section(() => fetchMktDashboard(range.from, range.to)),
     section(() => fetchOverview(range.from, range.to)),
     section(() => fetchRevenue(range.from, range.to)),
     section(() => fetchWeeklyTrends()),
     section(() => fetchFunnel()),
     section(() => fetchAttention()),
   ]);
-  return { overview, revenue, weekly, funnel, attention };
+  return { mkt, overview, revenue, weekly, funnel, attention };
 }
 
 /** Link sang một màn trong admin Remin; chưa có `adminUrl` (từ getReminConfig) thì không có link. */

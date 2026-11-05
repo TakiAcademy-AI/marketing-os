@@ -20,6 +20,11 @@ export function formatInt(n: number): string {
 
 export const pct1 = (n: number): string => `${oneDecimal.format(n)}%`;
 
+const twoDecimal = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 2 });
+
+/** Bội số, vd ROAS: "1,85x". */
+export const timesText = (n: number): string => `${twoDecimal.format(n)}x`;
+
 /** Tỷ trọng trong tổng; phần ≤ 0 hoặc tổng ≤ 0 thì "—". */
 export function shareText(part: number, total: number): string {
   return part > 0 && total > 0 ? pct1((part / total) * 100) : '—';

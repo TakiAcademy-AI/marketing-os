@@ -115,6 +115,14 @@ export async function callReminTool(
         `Mã kết nối Remin thiếu quyền ${toolError.required ?? ''}. ${NEW_TOKEN_HINT}`
       );
     }
+    // Trang gọi công cụ mà bản Remin đang chạy chưa có (trang lên trước, Remin chờ đợt
+    // phát hành sau). Không phải lỗi tạm thời nên không bảo "thử lại".
+    if (toolError?.code === 'TOOL_NOT_FOUND') {
+      throw new ReminApiError(
+        toolError.code,
+        'Bản Remin đang chạy chưa có số này. Số tự hiện khi Remin lên bản mới, không cần làm gì thêm.'
+      );
+    }
     throw new ReminApiError(
       toolError?.code ?? 'TOOL_FAILED',
       'Remin không tính được số liệu này. Thử lại sau ít phút.'
