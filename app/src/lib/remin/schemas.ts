@@ -124,7 +124,108 @@ export const attentionSchema = z.object({
   ),
 });
 
+// Dashboard MKT của admin Remin (`/mkt`), công cụ `get_mkt_dashboard`: số tổng theo kênh,
+// không có từng đơn hay khách. "Data" = lead để lại form đặt mua (đã bỏ rác), gán kênh
+// theo lần chạm cuối. Đơn chốt / Chờ thu = đơn chốt trong kỳ kể cả mới cọc và phần chưa thu.
+const closedCols = {
+  closedOrders: z.number(),
+  pendingVnd: z.number(),
+};
+
+const leadQuality = {
+  leads: z.number(),
+  junk: z.number(),
+  contacted: z.number(),
+  purchased: z.number(),
+};
+
+export const mktDashboardSchema = z.object({
+  range: dateRange,
+  ads: z.object({
+    rows: z.array(
+      z.object({
+        key: z.string(),
+        label: z.string(),
+        spendVnd: z.number(),
+        leads: z.number(),
+        orders: z.number(),
+        netVnd: z.number(),
+        ...closedCols,
+      })
+    ),
+    total: z.object({
+      spendVnd: z.number(),
+      leads: z.number(),
+      orders: z.number(),
+      netVnd: z.number(),
+      ...closedCols,
+    }),
+  }),
+  organic: z.object({
+    rows: z.array(
+      z.object({
+        key: z.string(),
+        label: z.string(),
+        /** Hàng phụ (SEO, organic khác): toàn số 0 thì ẩn, như admin. */
+        extra: z.boolean(),
+        /** null = không áp dụng (SEO). */
+        posts: z.number().nullable(),
+        traffic: z.number(),
+        /** null = hàng chưa nối kênh social. */
+        reach: z.number().nullable(),
+        engagement: z.number().nullable(),
+        followers: z.number().nullable(),
+        followersDelta: z.number().nullable(),
+        leads: z.number(),
+        orders: z.number(),
+        netVnd: z.number(),
+        ...closedCols,
+      })
+    ),
+    total: z.object({
+      posts: z.number(),
+      traffic: z.number(),
+      reach: z.number().nullable(),
+      engagement: z.number().nullable(),
+      followers: z.number().nullable(),
+      followersDelta: z.number().nullable(),
+      leads: z.number(),
+      orders: z.number(),
+      netVnd: z.number(),
+      ...closedCols,
+    }),
+  }),
+  campaigns: z.array(
+    z.object({
+      channelLabel: z.string(),
+      /** '' = link không ghi tên chiến dịch. */
+      campaign: z.string(),
+      spendVnd: z.number(),
+      orders: z.number(),
+      netVnd: z.number(),
+      /** Doanh thu / chi; null = chưa chi. */
+      roas: z.number().nullable(),
+      ...leadQuality,
+    })
+  ),
+  campaignsTotal: z.number(),
+  quality: z.object({
+    rows: z.array(z.object({ key: z.string(), label: z.string(), ...leadQuality })),
+    total: z.object(leadQuality),
+  }),
+  overall: z.object({
+    leads: z.number(),
+    leadsOutside: z.number(),
+    visits: z.number(),
+    visitsOutside: z.number(),
+    visitsDirect: z.number(),
+    orders: z.number(),
+    netVnd: z.number(),
+  }),
+});
+
 export type ReminOverview = z.infer<typeof overviewSchema>;
+export type ReminMktDashboard = z.infer<typeof mktDashboardSchema>;
 export type ReminFinance = ReminOverview['finance'];
 export type ReminRevenueLine = ReminFinance['sources'][number];
 export type ReminWeek = z.infer<typeof weeklyTrendsSchema>['weeks'][number];

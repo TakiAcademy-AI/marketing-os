@@ -37,7 +37,9 @@ export function DashboardDateRangePicker({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [, startTransition] = useTransition();
+  // isPending: trang đang lấy số kỳ mới. Phải hiện ra, không thì bấm xong trông như
+  // không ăn (trang Remin chờ admin Remin trả số mất vài giây).
+  const [isPending, startTransition] = useTransition();
   const [showCustom, setShowCustom] = useState(currentMode === 'custom');
   const [customFrom, setCustomFrom] = useState(currentFromIso);
   const [customTo, setCustomTo] = useState(currentToIso);
@@ -66,9 +68,15 @@ export function DashboardDateRangePicker({
     <div
       className="flex items-center gap-2 flex-wrap"
       aria-label="Khung thời gian"
+      aria-busy={isPending}
     >
       {/* Preset segmented + custom toggle */}
-      <div className="inline-flex rounded-lg bg-zinc-100 p-0.5">
+      <div
+        className={cn(
+          'inline-flex rounded-lg bg-zinc-100 p-0.5 transition-opacity',
+          isPending && 'opacity-60'
+        )}
+      >
         {TIME_RANGE_OPTIONS.map((days) => {
           const isActive = currentMode === 'preset' && currentPreset === days;
           return (
@@ -101,6 +109,12 @@ export function DashboardDateRangePicker({
           Tuỳ chỉnh
         </button>
       </div>
+
+      {isPending && (
+        <span className="text-[11px] text-zinc-500" role="status">
+          Đang tải số…
+        </span>
+      )}
 
       {/* Display current custom range text khi popover closed */}
       {currentMode === 'custom' && !showCustom && (

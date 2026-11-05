@@ -64,6 +64,19 @@ export function PanelTitle({
   );
 }
 
+/** Khối không đọc được số: báo ngay tại chỗ, kèm tên khối để biết số nào đang thiếu. */
+export function SectionNotice({ title, message }: { title?: string; message: string }) {
+  return (
+    <p
+      role="alert"
+      className="rounded-xl bg-red-50 p-4 text-sm text-red-800 ring-1 ring-red-200"
+    >
+      {title && <span className="font-semibold">{title}: </span>}
+      {message}
+    </p>
+  );
+}
+
 /** Link sang admin Remin: mở tab mới vì là ứng dụng khác, cần đăng nhập riêng. */
 export function ExternalAction({ label, href }: { label: string; href: string }) {
   return (

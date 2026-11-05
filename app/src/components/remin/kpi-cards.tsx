@@ -11,7 +11,7 @@ import {
 } from '@/lib/remin/format';
 import { Change } from './parts';
 
-function StatTile({
+export function StatTile({
   label,
   value,
   sub,
