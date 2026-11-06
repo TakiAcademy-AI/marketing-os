@@ -17,6 +17,12 @@ import { LarkAppForm } from './lark-form';
 import { LarkBaseForm } from './lark-base-form';
 import { TelegramForm } from './telegram-form';
 import { ReminForm } from './remin-form';
+import { MailConsoleForm } from './mail-console-form';
+import {
+  MAIL_CONSOLE_TOKEN_KEY,
+  MAIL_CONSOLE_URL_KEY,
+  getMailConsoleConfig,
+} from '@/lib/mail-console/config';
 import {
   REMIN_ADMIN_URL_KEY,
   REMIN_API_URL_KEY,
@@ -61,7 +67,8 @@ export default async function IntegrationsPage({ searchParams }: PageProps) {
          larkAppIdMeta, larkAppSecretMeta,
          larkMktAppTokenMeta, larkMktTableIdMeta, larkOrderAppTokenMeta, larkOrderTableIdMeta,
          telegramBotTokenMeta, telegramChatIdMeta,
-         reminApiMeta, reminTokenMeta] =
+         reminApiMeta, reminTokenMeta,
+         mailConsoleUrlMeta, mailConsoleTokenMeta] =
     await listSettingsMetadata([
       OPENROUTER_KEY_NAME,
       FB_APP_ID_KEY,
@@ -82,6 +89,8 @@ export default async function IntegrationsPage({ searchParams }: PageProps) {
       TELEGRAM_CHAT_ID_KEY,
       REMIN_API_URL_KEY,
       REMIN_MCP_TOKEN_KEY,
+      MAIL_CONSOLE_URL_KEY,
+      MAIL_CONSOLE_TOKEN_KEY,
     ]);
   // Load plaintext lists (not secret — hiển thị OK trong UI)
   const [googleConnected, twitterHandles, facebookPages, twitterActor] = await Promise.all([
@@ -95,6 +104,8 @@ export default async function IntegrationsPage({ searchParams }: PageProps) {
   const remin = await getReminConfig();
   // Chưa có bản ghi DB nào mà vẫn có giá trị ⇒ đang chạy bằng env.
   const reminUsingEnv = !reminApiMeta?.isSet && Boolean(remin.apiUrl);
+  const mailConsole = await getMailConsoleConfig();
+  const mailConsoleUsingEnv = !mailConsoleUrlMeta?.isSet && Boolean(mailConsole.url);
   const openrouter = orMeta ?? {
     key: OPENROUTER_KEY_NAME,
     isSet: false,
@@ -204,6 +215,14 @@ export default async function IntegrationsPage({ searchParams }: PageProps) {
         usingEnvFallback={reminUsingEnv}
         updatedAt={reminTokenMeta?.updatedAt ?? reminApiMeta?.updatedAt ?? null}
         updatedByName={reminTokenMeta?.updatedByName ?? reminApiMeta?.updatedByName ?? null}
+      />
+
+      <MailConsoleForm
+        initialUrl={mailConsole.url ?? ''}
+        tokenIsSet={Boolean(mailConsole.token)}
+        usingEnvFallback={mailConsoleUsingEnv}
+        updatedAt={mailConsoleTokenMeta?.updatedAt ?? mailConsoleUrlMeta?.updatedAt ?? null}
+        updatedByName={mailConsoleTokenMeta?.updatedByName ?? mailConsoleUrlMeta?.updatedByName ?? null}
       />
 
       <div className="rounded-xl border border-dashed border-zinc-300 bg-zinc-50/50 px-5 py-4 text-xs text-zinc-500 italic">
