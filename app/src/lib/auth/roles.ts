@@ -15,7 +15,7 @@ export const ROLE_LABEL: Record<UserRole, string> = {
 export const ROLE_DESCRIPTION: Record<UserRole, string> = {
   admin: 'Toàn quyền — quản lý team, cấu hình tích hợp, mọi trang.',
   member: 'Xem + thao tác trên các kênh được gán.',
-  guest: 'Chỉ xem. Không thấy Quảng cáo / Landing Pages / Doanh thu / Dashboard Lark / Remin.',
+  guest: 'Chỉ xem. Không thấy Quảng cáo / Email / Landing Pages / Doanh thu / Dashboard Lark / Remin.',
 };
 
 export function isUserRole(value: unknown): value is UserRole {
@@ -47,6 +47,7 @@ export const GUEST_DENIED_PREFIXES: readonly string[] = [
   '/revenue',
   '/lark-base',
   '/remin',
+  '/email',
   '/api/ads',
   '/api/landing-pages',
   '/api/revenue',

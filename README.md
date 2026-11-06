@@ -34,6 +34,7 @@ Zapier, n8n) truy vấn dữ liệu read-only.
 |-------|-------|
 | `dashboard` | KPI hero, biểu đồ xu hướng, bảng kênh, top performers, feed cảnh báo |
 | `remin` | Màn Tổng quan của admin Remin: tài chính, lãi lỗ, xu hướng 12 tuần, máy ghi âm. Số đọc trực tiếp qua cổng MCP của Remin; role Khách không xem được |
+| `email` | Dashboard sức khỏe email (gửi thành công, spam, bounce, open, click so ngưỡng; đơn + doanh thu từ mail) và danh sách automation của console mail. Đọc bằng mã API chỉ đọc của console; role Khách không xem được |
 | `channels` | Kết nối/quản lý social account (FB trực tiếp + Bundle.social) |
 | `briefs` | Content brief: tạo, theo dõi status, activity log, draft content |
 | `revenue` | Nhập & theo dõi doanh thu thủ công |

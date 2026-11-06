@@ -20,6 +20,7 @@ import {
   ScrollText,
   Sparkles,
   Mic,
+  Mail,
 } from 'lucide-react';
 import type { SessionData } from '@/lib/auth/session-config';
 import { isPathDeniedForGuest, type UserRole } from '@/lib/auth/roles';
@@ -31,6 +32,7 @@ const BASE_ITEMS = [
   { href: '/briefs', label: 'Xưởng nội dung', icon: Inbox },
   { href: '/channels', label: 'Kênh', icon: Radio },
   { href: '/ads', label: 'Quảng cáo', icon: Zap },
+  { href: '/email', label: 'Email', icon: Mail },
   { href: '/landing-pages', label: 'Landing Pages', icon: Globe },
   { href: '/library', label: 'Thư viện', icon: BookOpen },
   { href: '/skills', label: 'Thư viện Skill', icon: Package },
