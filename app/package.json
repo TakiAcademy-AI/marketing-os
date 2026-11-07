@@ -10,6 +10,7 @@
     "db:rollback": "node scripts/migrate.cjs down 1",
     "db:seed": "tsx scripts/seed-dev-data.ts",
     "db:reset": "node scripts/migrate.cjs down 999 && node scripts/migrate.cjs up && tsx scripts/seed-dev-data.ts",
+    "test:db": "node --import tsx --test tests/*.test.ts",
     "mcp:stdio": "tsx scripts/mcp-stdio.ts"
   },
   "dependencies": {

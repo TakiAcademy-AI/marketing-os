@@ -144,6 +144,9 @@ export async function DELETE(
     if (result.rowCount === 0) {
       return NextResponse.json({ error: 'Member not found' }, { status: 404 });
     }
+    // Phiên đang mở của người bị xoá chết ngay (proxy coi user không tồn tại =
+    // không đăng nhập), không phải chờ cache 15s hết hạn.
+    invalidateRoleCache(id);
     return NextResponse.json({ ok: true, email: result.rows[0]?.email });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Internal error';

@@ -41,7 +41,7 @@ Zapier, n8n) truy vấn dữ liệu read-only.
 | `library` | Thư viện nội dung (có full-text search) |
 | `news` | Ingest & xem tin tức |
 | `skills` | Thư viện skill — upload file zip, download, quản lý |
-| `team` | Quản lý thành viên (role, reset password) |
+| `team` | Quản lý thành viên (role, reset password, khoá / mở khoá tài khoản) |
 | `cron-logs` | Theo dõi log các job nền |
 
 ---
@@ -133,6 +133,7 @@ Mở http://localhost:3000 → đăng nhập bằng `ADMIN_EMAIL` + mật khẩu
 | `npm run db:rollback` | Rollback 1 migration gần nhất |
 | `npm run db:seed` | Seed dữ liệu dev |
 | `npm run db:reset` | Drop tất cả → migrate → seed (cẩn thận, mất data) |
+| `npm run test:db` | Test cần Postgres riêng: `TEST_DATABASE_URL` (tên DB phải có chữ `test`, test sẽ TRUNCATE `team_member`); thêm `TEST_BASE_URL` (app đang chạy trên cùng DB) để chạy phần HTTP |
 | `npm run mcp:stdio` | MCP server cho Claude Desktop/Code |
 
 ---

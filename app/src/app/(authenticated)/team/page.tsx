@@ -10,6 +10,7 @@ import { DeleteMemberButton } from './delete-member-button';
 import { ResetPasswordDialog } from './reset-password-dialog';
 import { GoalEditorDialog } from './goal-editor-dialog';
 import { EditMemberDialog } from './edit-member-dialog';
+import { LockMemberDialog } from './lock-member-dialog';
 
 export const metadata: Metadata = {
   title: 'Team — Marketing OS',
@@ -54,36 +55,55 @@ export default async function TeamPage({ searchParams }: Props) {
       <TeamKpiSummaryCards data={summary} />
 
       {/* Tier 2: Member cards grid — admin sees: GoalEditorDialog cho mọi
-          member (kể cả chính mình), + ResetPassword/Delete cho member khác
+          member (kể cả chính mình), + ResetPassword/Khoá/Delete cho member khác
           (không cho self-action → tránh lock-out). Non-admin chỉ thấy goal
-          read-only (qua progress bars trong card body). */}
+          read-only (qua progress bars trong card body).
+          Người bị khoá: nhãn "ĐÃ KHOÁ" (bấm để mở khoá) nằm riêng một dòng dưới
+          badge trạng thái — fragment nên thành item riêng trong cột phải của
+          thẻ, không nối vào hàng icon để khỏi bóp mất tên. Chỉ admin thấy. */}
       <TeamMemberGrid
         members={members}
         renderAction={
           isAdmin
             ? (m) => (
-                <div className="flex items-center gap-1.5 flex-wrap justify-end">
-                  <GoalEditorDialog
-                    memberId={m.id}
-                    memberName={m.name}
-                    initialFollowGrowth={m.goals.goalFollowGrowth30d}
-                    initialReach={m.goals.goalReach30d}
-                    initialPostsPerChannel={m.goals.goalPostsPerChannel30d}
-                  />
-                  <EditMemberDialog
-                    id={m.id}
-                    initialName={m.name}
-                    initialEmail={m.email}
-                    initialRole={m.role}
-                    isSelf={m.id === currentUserId}
-                  />
-                  {m.id !== currentUserId && (
-                    <>
-                      <ResetPasswordDialog id={m.id} name={m.name} />
-                      <DeleteMemberButton id={m.id} name={m.name} />
-                    </>
+                <>
+                  {m.id !== currentUserId && m.disabledAt && (
+                    <LockMemberDialog
+                      id={m.id}
+                      name={m.name}
+                      disabledAt={m.disabledAt}
+                    />
                   )}
-                </div>
+                  <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                    <GoalEditorDialog
+                      memberId={m.id}
+                      memberName={m.name}
+                      initialFollowGrowth={m.goals.goalFollowGrowth30d}
+                      initialReach={m.goals.goalReach30d}
+                      initialPostsPerChannel={m.goals.goalPostsPerChannel30d}
+                    />
+                    <EditMemberDialog
+                      id={m.id}
+                      initialName={m.name}
+                      initialEmail={m.email}
+                      initialRole={m.role}
+                      isSelf={m.id === currentUserId}
+                    />
+                    {m.id !== currentUserId && (
+                      <>
+                        <ResetPasswordDialog id={m.id} name={m.name} />
+                        {!m.disabledAt && (
+                          <LockMemberDialog
+                            id={m.id}
+                            name={m.name}
+                            disabledAt={null}
+                          />
+                        )}
+                        <DeleteMemberButton id={m.id} name={m.name} />
+                      </>
+                    )}
+                  </div>
+                </>
               )
             : undefined
         }

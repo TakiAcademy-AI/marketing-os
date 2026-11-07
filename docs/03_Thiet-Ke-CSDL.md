@@ -308,6 +308,8 @@ CREATE TYPE ad_account_status_t AS ENUM (
 | `role` | VARCHAR(50) | NOT NULL | Vai trò: `admin` hoặc `member` |
 | `password_hash` | VARCHAR(255) | | Mật khẩu đã hash (bcrypt) |
 | `bundle_team_id` | VARCHAR(100) | | ID team trên Bundle.social |
+| `disabled_at` | TIMESTAMPTZ | | NULL = đang hoạt động; có giá trị = bị khoá từ lúc đó (không đăng nhập được, phiên đang mở hết hiệu lực, dữ liệu giữ nguyên) — migration 068 |
+| `disabled_by` | UUID | FK → team_member, ON DELETE SET NULL | Admin đã khoá; NULL khi đang hoạt động |
 | `created_at` | TIMESTAMPTZ | DEFAULT NOW() | Thời điểm tạo |
 | `updated_at` | TIMESTAMPTZ | DEFAULT NOW() | Thời điểm cập nhật cuối |
 

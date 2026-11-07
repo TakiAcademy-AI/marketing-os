@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { unsealData } from 'iron-session';
 import type { SessionData } from '@/lib/auth/session-config';
-import { getUserRoleCached } from '@/lib/auth/role-cache';
+import { getAccountStateCached } from '@/lib/auth/role-cache';
 import { isPathDeniedForGuest, isWriteBlockedForGuest } from '@/lib/auth/roles';
 
 // Next.js 16 proxy convention (replaces deprecated middleware).
@@ -9,8 +9,9 @@ import { isPathDeniedForGuest, isWriteBlockedForGuest } from '@/lib/auth/roles';
 // could technically be imported now, but we keep this file minimal to stay
 // fast on every matched request.
 //
-// Ngoại lệ: role `guest` cần 1 query role → dùng getUserRoleCached (TTL 15s)
-// nên chi phí thêm gần như bằng 0 sau request đầu tiên.
+// Ngoại lệ: mỗi request có phiên cần 1 query trạng thái tài khoản (role + đã
+// khoá chưa) → dùng getAccountStateCached (TTL 15s) nên chi phí thêm gần như
+// bằng 0 sau request đầu tiên.
 
 const COOKIE_NAME = 'mos_session';
 
@@ -59,6 +60,7 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
   }
 
   const cookieValue = request.cookies.get(COOKIE_NAME)?.value;
+  let userId: string | null = null;
 
   if (cookieValue) {
     try {
@@ -66,13 +68,25 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
         password: sessionPassword,
         ttl: SESSION_TTL,
       });
-
-      if (session.userId) {
-        return enforceGuestPolicy(request, session.userId);
-      }
+      userId = session.userId || null;
     } catch {
       // Tampered or expired cookie — fall through to redirect
     }
+  }
+
+  if (userId) {
+    const account = await getAccountStateCached(userId);
+    if (account && !account.disabled) {
+      return enforceGuestPolicy(request, account.role);
+    }
+
+    // Tài khoản đã bị khoá (team_member.disabled_at) hoặc đã bị xoá: cookie vẫn
+    // giải mã được (iron-session không thu hồi được theo từng người) nhưng phiên
+    // phải coi như không có. Xoá luôn cookie để trình duyệt thôi gửi lại.
+    // Route bị matcher loại trừ (vd /api/auth/*) được chặn ở getCurrentUser().
+    const response = NextResponse.redirect(new URL('/login', request.url));
+    response.cookies.delete(COOKIE_NAME);
+    return response;
   }
 
   return NextResponse.redirect(new URL('/login', request.url));
@@ -93,11 +107,10 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
  * `api/auth/change-password`) KHÔNG đi qua đây — chúng phải tự guard bằng
  * `rejectGuest()` (src/lib/auth/guards.ts) trong route handler.
  */
-async function enforceGuestPolicy(
+function enforceGuestPolicy(
   request: NextRequest,
-  userId: string
-): Promise<NextResponse> {
-  const role = await getUserRoleCached(userId);
+  role: string
+): NextResponse {
   if (role !== 'guest') return NextResponse.next();
 
   const { pathname } = request.nextUrl;

@@ -49,11 +49,15 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     );
   }
 
-  // Fetch user — use LOWER() to normalize email comparison
+  // Fetch user — use LOWER() to normalize email comparison.
+  // Tài khoản bị khoá (disabled_at) coi như không tồn tại: vẫn chạy bcrypt với
+  // hash giả bên dưới (cùng thời gian), trả cùng thông báo "Email hoặc mật khẩu
+  // sai" và cùng tính rate limit — không lộ việc tài khoản có tồn tại / bị khoá.
   const result = await db.query<TeamMember>(
     `SELECT id, email, name, role, password_hash
      FROM team_member
      WHERE LOWER(email) = LOWER($1)
+       AND disabled_at IS NULL
      LIMIT 1`,
     [normalizedEmail]
   );

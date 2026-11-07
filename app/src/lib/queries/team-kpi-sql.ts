@@ -9,6 +9,10 @@ export interface MemberAggregateRow {
   email: string;
   role: string;
   created_at: string;
+  // Thời điểm bị khoá (migration 068), NULL = đang hoạt động. Thẻ KPI vẫn hiện
+  // người bị khoá vì kênh của họ vẫn còn số liệu; màn Team dùng cột này để hiện
+  // trạng thái + nút Mở khoá cho admin.
+  disabled_at: string | null;
 
   // Last 7 days post window
   posts_7d: number;
@@ -222,6 +226,7 @@ SELECT
   tm.id AS member_id,
   tm.name, tm.email, tm.role,
   tm.created_at::TEXT AS created_at,
+  tm.disabled_at::TEXT AS disabled_at,
   COALESCE(a7.posts_7d, 0) AS posts_7d,
   COALESCE(a7.reach_7d, 0) AS reach_7d,
   COALESCE(a7.avg_reach_7d, 0) AS avg_reach_7d,

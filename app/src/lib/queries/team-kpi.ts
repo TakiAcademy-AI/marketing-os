@@ -63,6 +63,8 @@ export interface TeamMemberKpi {
   metrics: KpiMetric[];
   tags: string[];
   goals: MemberGoals;
+  /** team_member.disabled_at dạng text Postgres (giờ VN, vd '2026-11-07 21:30:00+07'); null = đang hoạt động. */
+  disabledAt: string | null;
 }
 
 export interface TeamKpiSummary {
