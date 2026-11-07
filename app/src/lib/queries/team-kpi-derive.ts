@@ -213,6 +213,7 @@ export function deriveKpiFromAggregate(row: MemberAggregateRow, idx: number): Te
       // Empty member vẫn cho phép admin set goal — UI dialog "Sửa mục tiêu"
       // vẫn hoạt động kể cả khi chưa có data thực.
       goals: buildGoals(row),
+      disabledAt: row.disabled_at,
     };
   }
 
@@ -238,5 +239,6 @@ export function deriveKpiFromAggregate(row: MemberAggregateRow, idx: number): Te
     metrics,
     tags: row.account_names,
     goals: buildGoals(row),
+    disabledAt: row.disabled_at,
   };
 }
